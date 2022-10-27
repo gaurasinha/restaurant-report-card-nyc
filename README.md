@@ -1,8 +1,9 @@
-#BACKGROUND AND MOTIVATION
+# BACKGROUND AND MOTIVATION
+
 No one wants to go for a dinner night out, and come back home with an upset stomach. Unfortunately, all of us can relate to that one night where a dinner became unforgettable for all the wrong reasons. That one place which had the tastiest kebabs, but made you violently sick the day after! Couple that with a big city, and you have a possible recipe for a gastro-disaster, pun intended.
 </br>Food safety and restaurant hygiene is always a concern when dining out. This has never been more relevant. The COVID-19 pandemic made eating out seem like a distant dream. While restaurants may have finally opened up and life does seem to be getting back to “normal” again, the pandemic has left us all a lot more conscious about hygiene and safety in public places. We wanted to see if there was a way for us to make a visualization that helped folks figure out if a restaurant passed the safety check with as much of a margin as they wished or not. 
 </br>We chose New York, since it’s a popular hotspot for tourists and expects a non-local population who may find such a resource useful, and for the abundance and variety of restaurants and cuisines in the city.
-#OBJECTIVE
+# OBJECTIVE
 While going through the dataset, we encountered some primary questions that we will try to answer with the help of visualization; they are as follows:
 - To allow users to zero in on an area and cuisine, and check the food safety grade of restaurants in that area
 - How safety compliant has my restaurant of choice been historically?
@@ -14,7 +15,7 @@ While going through the dataset, we encountered some primary questions that we w
 
 </br></br>By the end of this project, we would want to be able to compare restaurants and choose the best one for our dinner night out.
 
-#DATA
+# DATA
 We have picked our dataset from the following sources
 </br>https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/43nn-pn8j/data 
 </br>For the geometry visualization, we have picked our shapefile from
