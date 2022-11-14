@@ -1,63 +1,41 @@
+var map = new L.Map("map", {center: [40.71, -74.01], zoom: 10})
+    .addLayer(new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"));
 
-d3.csv("316e22cd-4d76-44ea-96f4-eb31ff4bb3e1_Data.csv").then(
-    function(dataset){
-        
-        d3.json("map.json").then(function(mapdata){
+var svg = d3.select(map.getPanes().overlayPane).append("svg"),
+    g = svg.append("g").attr("class", "leaflet-zoom-hide");
 
-            console.log(dataset)
-            console.log(mapdata)
+d3.json("../data/ZIP_CODE_040114.geojson", function(error, collection) {
+  if (error) throw error;
 
-            //starting by creating an easier way to access my data by country
-            var countryPop = {}
-            dataset.forEach(d => {
-                countryPop[d["Country Code"]] = +d["2019 [YR2019]"]
-            })
+  var transform = d3.geo.transform({point: projectPoint}),
+      path = d3.geo.path().projection(transform);
 
-            var size = 800
-            var dimensions = ({
-                width: size, 
-                height: size/2,
-                margin: {
-                 top: 10,
-                 right: 10,
-                 bottom: 10,
-                 left: 10
-                }
-               })
+  var feature = g.selectAll("path")
+      .data(collection.features)
+    .enter().append("path");
 
+  map.on("viewreset", reset);
+  reset();
 
-            var svg = d3.select("svg").attr("width", dimensions.width)
-                                    .attr("height", dimensions.height)
-  
-            var projection = d3.geoEqualEarth() //geoOrthographic() //geoMercator()
-                                .fitWidth(dimensions.width, {type: "Sphere"})
+  // Reposition the SVG to cover the features.
+  function reset() {
+    var bounds = path.bounds(collection),
+        topLeft = bounds[0],
+        bottomRight = bounds[1];
 
-            var pathGenerator = d3.geoPath(projection)
+    svg .attr("width", bottomRight[0] - topLeft[0])
+        .attr("height", bottomRight[1] - topLeft[1])
+        .style("left", topLeft[0] + "px")
+        .style("top", topLeft[1] + "px");
 
-            var earth = svg.append("path")
-                        .attr("d", pathGenerator({type: "Sphere"}))
-                        .attr("fill", "lightblue")
+    g   .attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")");
 
-            var graticule = svg.append("path")
-                            .attr("d", pathGenerator(d3.geoGraticule10()))
-                            .attr("stroke", "gray")
-                            .attr("fill", "none")
+    feature.attr("d", path);
+  }
 
-            var color = d3.scaleLinear()
-                .domain([d3.min(Object.values(countryPop)),0,d3.max(Object.values(countryPop))])
-                .range(["red", "white","blue"])
-
-
-            var countries = svg.append("g")
-                            .selectAll(".country")
-                            .data(mapdata.features)
-                            .enter()
-                            .append("path")
-                            .attr("class", "country")
-                            .attr("d", d => pathGenerator(d))
-                            .style("fill", d => { console.log(d.properties.SOV_A3); return color(countryPop[d.properties.SOV_A3])})
-                            
-            
-        })
-    }
-)
+  // Use Leaflet to implement a D3 geometric transformation.
+  function projectPoint(x, y) {
+    var point = map.latLngToLayerPoint(new L.LatLng(y, x));
+    this.stream.point(point.x, point.y);
+  }
+});

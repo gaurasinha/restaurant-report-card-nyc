@@ -4,17 +4,36 @@
   <head>
     <meta charset="UTF-8"/>
     <title>Ceci n'est pas un document HTML</title>
+    <style>
+      @import url(//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.5/leaflet.css);
 
-    <script src="https://d3js.org/d3.v7.min.js"></script>
+      #map {
+        width: 960px;
+        height: 500px;
+      }
+      
+      svg {
+        position: relative;
+      }
+      
+      path {
+        fill: #000;
+        fill-opacity: .2;
+        stroke: #fff;
+        stroke-width: 1.5px;
+      }
+      
+      path:hover {
+        fill: brown;
+        fill-opacity: .7;
+      }
+      
+      </style>
   </head>
   <body>
-
-    <div>
-      <svg id="map">
-
-      </svg>
-    </div>
-
-    <script src="script.js"></script>
+      <p id="map">
   </body>
+  <script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.5/leaflet.js"></script>
+  <script src="script.js"></script>
 </html>
