@@ -8,6 +8,14 @@ var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 var scaleColor = d3.scaleSequential(d3.interpolateRdYlGn)
                   .domain(d3.extent(zipdata.features, d => +d.properties.POPULATION))
 
+
+
+map.on('click', function(e) {
+    console.log("Lat, Lon : " + e.latlng.lat + ", " + e.latlng.lng)
+    map.zoomIn();
+});
+
+
 function style(feature) {
   return {
       fillColor: scaleColor(feature.properties.POPULATION),
@@ -47,8 +55,3 @@ function onEachFeature(feature, layer) {
       click: zoomToFeature
   });
 }
-
-geojson = L.geoJson(zipdata, {
-  style: style,
-  onEachFeature: onEachFeature
-}).addTo(map);
