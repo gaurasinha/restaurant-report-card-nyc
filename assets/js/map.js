@@ -6,12 +6,12 @@ var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 var scaleColor = d3.scaleSequential(d3.interpolateRdYlGn)
-                  .domain(d3.extent(zipdata.features, d => +d.properties.POPULATION))
+                  .domain(d3.extent(zipdata.features, d => +d.properties.AvgScore))
 
 
 function style(feature) {
   return {
-      fillColor: scaleColor(feature.properties.POPULATION),
+      fillColor: scaleColor(feature.properties.AvgScore),
       weight: 2,
       opacity: 1,
       color: 'white',
