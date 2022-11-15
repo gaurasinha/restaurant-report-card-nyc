@@ -9,13 +9,6 @@ var scaleColor = d3.scaleSequential(d3.interpolateRdYlGn)
                   .domain(d3.extent(zipdata.features, d => +d.properties.POPULATION))
 
 
-
-map.on('click', function(e) {
-    console.log("Lat, Lon : " + e.latlng.lat + ", " + e.latlng.lng)
-    map.zoomIn();
-});
-
-
 function style(feature) {
   return {
       fillColor: scaleColor(feature.properties.POPULATION),
@@ -46,6 +39,7 @@ function resetHighlight(e) {
 
 function zoomToFeature(e) {
   map.fitBounds(e.target.getBounds());
+  console.log("Lat, Lon : " + e.latlng.lat + ", " + e.latlng.lng)
 }
 
 function onEachFeature(feature, layer) {
@@ -55,3 +49,8 @@ function onEachFeature(feature, layer) {
       click: zoomToFeature
   });
 }
+
+geojson = L.geoJson(zipdata, {
+  style: style,
+  onEachFeature: onEachFeature
+}).addTo(map);
