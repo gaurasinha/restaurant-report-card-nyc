@@ -5,9 +5,30 @@ var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(map);
 
+
 var scaleColor = d3.scaleSequential(d3.interpolateRdYlGn)
                   .domain(d3.extent(zipdata.features, d => +d.properties.POPULATION))
 
+
+$.get('assets/data/restrauntAvg.csv', function(csvString) {
+
+// Use PapaParse to convert string to array of objects
+var data = Papa.parse(csvString, {header: true, dynamicTyping: true}).data;
+
+// For each row in data, create a marker and add it to the map
+// For each row, columns `Latitude`, `Longitude`, and `Title` are required
+for (var i in data) {
+  var row = data[i];
+  console.log(row)
+
+  var marker = L.marker([row.Latitude, row.Longitude], {
+    opacity: 1
+  }).bindPopup(row.DBA);
+  
+  marker.addTo(map);
+}
+
+});
 
 function style(feature) {
   return {
