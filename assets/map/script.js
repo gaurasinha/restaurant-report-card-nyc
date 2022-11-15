@@ -1,46 +1,30 @@
-var map = new L.Map("map", {center: [40.71, -74.01], zoom: 10})
-    .addLayer(new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"));
+var map = L.map('map').setView([40.7055025, -73.977681], 10);
 
-var svg = d3.select(map.getPanes().overlayPane).append("svg"),
-    g = svg.append("g").attr("class", "leaflet-zoom-hide");
+var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+}).addTo(map);
 
-d3.json("../data/ZIP_CODE_040114.geojson", function(error, collection) {
-  if (error) throw error;
+var scaleColor = d3.scaleSequential(d3.interpolateRdYlGn)
+                  .domain(d3.extent(zipdata.features, d => +d.properties.POPULATION))
 
-  var transform = d3.geo.transform({point: projectPoint}),
-      path = d3.geo.path().projection(transform);
 
-  var feature = g.selectAll("path")
-      .data(collection.features)
-    .enter().append("path");
 
-  map.on("viewreset", reset);
-  reset();
-
-  // Reposition the SVG to cover the features.
-  function reset() {
-    var bounds = path.bounds(collection),
-        topLeft = bounds[0],
-        bottomRight = bounds[1];
-
-    svg .attr("width", bottomRight[0] - topLeft[0])
-        .attr("height", bottomRight[1] - topLeft[1])
-        .style("left", topLeft[0] + "px")
-        .style("top", topLeft[1] + "px");
-
-    g   .attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")");
-
-    feature.attr("d", path);
-  }
-
-  map.on('click', function(e) {
+map.on('click', function(e) {
     console.log("Lat, Lon : " + e.latlng.lat + ", " + e.latlng.lng)
     map.zoomIn();
 });
 
-  // Use Leaflet to implement a D3 geometric transformation.
-  function projectPoint(x, y) {
-    var point = map.latLngToLayerPoint(new L.LatLng(y, x));
-    this.stream.point(point.x, point.y);
-  }
-});
+
+function style(feature) {
+  return {
+      fillColor: scaleColor(feature.properties.POPULATION),
+      weight: 2,
+      opacity: 1,
+      color: 'white',
+      dashArray: '3',
+      fillOpacity: 0.5
+  };
+}
+L.geoJson(zipdata, {style: style}).addTo(map);
+
