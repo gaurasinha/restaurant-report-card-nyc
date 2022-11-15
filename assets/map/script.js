@@ -33,6 +33,11 @@ d3.json("../data/ZIP_CODE_040114.geojson", function(error, collection) {
     feature.attr("d", path);
   }
 
+  map.on('click', function(e) {
+    console.log("Lat, Lon : " + e.latlng.lat + ", " + e.latlng.lng)
+    map.zoomIn();
+});
+
   // Use Leaflet to implement a D3 geometric transformation.
   function projectPoint(x, y) {
     var point = map.latLngToLayerPoint(new L.LatLng(y, x));
