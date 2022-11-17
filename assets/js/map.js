@@ -36,6 +36,7 @@ function zipColor(d) {
 
 var restData;
 d3.csv('assets/data/restrauntAvg.csv').then(function (data) {
+<<<<<<< HEAD
   // For each row in data, create a marker and add it to the map
   // For each row, columns `Latitude`, `Longitude`, and `Title` are required
   data.forEach(function (d, i) {
@@ -56,6 +57,9 @@ d3.csv('assets/data/restrauntAvg.csv').then(function (data) {
 
   showCuisine('11213')
 });
+=======
+
+>>>>>>> 4a969260ba919ab73b62eba4710d2811e95932e2
 
 function style(feature) {
   return {
@@ -85,8 +89,37 @@ function resetHighlight(e) {
   geojson.resetStyle(e.target);
 }
 
+//Number.prototype.between = function(a, b) {
+  function calcRange(a,b){
+  var min = Math.min.apply(Math, [a, b]),
+    max = Math.max.apply(Math, [a, b]);
+    return [min, max]
+  //return this > min && this < max;
+};
+
+
 function zoomToFeature(e) {
   map.fitBounds(e.target.getBounds());
+  var geoBounds = e.target.getBounds();
+
+  latRange = calcRange(geoBounds._northEast.lat, geoBounds._southWest.lat)
+  lngRange = calcRange(geoBounds._northEast.lng, geoBounds._southWest.lng)
+
+  //filter data falling within geobounds
+  filteredData = data.filter(function(d){ return  (d.Latitude >= latRange[0] && d.Latitude <= latRange[1] && d.Longitude >= lngRange[0] && d.Longitude <= lngRange[1]) })
+  console.log(filteredData)
+  filteredData.forEach(function (d,i) {
+
+    var marker =L.marker([d.Latitude,d.Longitude], {
+      opacity: 1
+    }).bindPopup(d.DBA)
+    marker.addTo(map)
+  })
+
+  console.log(geoBounds)
+  //console.log(test.between(geoBounds._northEast.lat, geoBounds._southWest.lat));
+  console.log("NorthEast: " + geoBounds._northEast.lat)
+  console.log("NorthEast: " + geoBounds._northEast.lng)
   console.log("Lat, Lon : " + e.latlng.lat + ", " + e.latlng.lng)
   updateCuisine(e.target.feature.properties.ZIPCODE)
 }
