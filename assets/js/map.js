@@ -99,7 +99,7 @@ function zoomToFeature(e) {
   updateCuisine(e.target.feature.properties.ZIPCODE)
 
   //filter data falling with clicked zipcode
-  filteredData = restData.filter(function(d){ return  (d.ZIPCODE == e.target.feature.properties.ZIPCODE) })
+  filteredData = restData.filter(d=>d.ZIPCODE == e.target.feature.properties.ZIPCODE)
   filteredData.forEach(function (d) {
     inspectData = gradeData.filter(function (e){return (d.Latitude==e.Latitude)&&(d.DBA==e.DBA)})
     var inspectionResult = ""
@@ -107,7 +107,7 @@ function zoomToFeature(e) {
       inspectionResult+=e.INSPECTION_DATE + ': ' + e.GRADE +'<br />';
     }
     )
-    var div = $('<div id="'+  d.CAMIS +'" style="width: 200px; height:200px;"><p>'+inspectionResult+'</p><svg id="chart"></svg></div>')[0];
+    var div = $('<div id="'+  d.CAMIS +'" style="width: 200px; height:200px;"><p style="font-weight: bold;color:darkorange">Food Grades: 2021-22</p><p style="font-weight: bold;">'+d.DBA+'</p><p>'+inspectionResult+'</p><svg id="chart"></svg></div>')[0];
     var popup = L.popup().setContent(div);
 
     var marker =L.marker([d.Latitude,d.Longitude], {
