@@ -104,7 +104,7 @@ function zoomToFeature(e) {
     inspectData = gradeData.filter(function (e){return (d.Latitude==e.Latitude)&&(d.DBA==e.DBA)})
     var inspectionResult = ""
     inspectData.forEach(function (e){
-      inspectionResult+=e.GRADE;
+      inspectionResult+=e.INSPECTION_DATE + ': ' + e.GRADE +'<br />';
     }
     )
     var div = $('<div id="'+  d.CAMIS +'" style="width: 200px; height:200px;"><p>'+inspectionResult+'</p><svg id="chart"></svg></div>')[0];
