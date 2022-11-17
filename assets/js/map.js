@@ -11,10 +11,10 @@ var cuisineDimensions = {
   width: 400,
   height: 600,
   margin: {
-    top: 10,
-    bottom: 10,
-    right: 10,
-    left: 50
+    top: 0,
+    bottom: 0,
+    right: 0,
+    left: 10
   }
 }
 
