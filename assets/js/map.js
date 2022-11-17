@@ -8,8 +8,8 @@ var groupColors = ['#1a9850', '#91cf60', '#d9ef8b', '#fee08b', '#fc8d59','#d7302
 var currentZip;
 
 var cuisineDimensions = {
-  width: 960,
-  height: 400,
+  width: 400,
+  height: 600,
   margin: {
     top: 10,
     bottom: 10,
@@ -18,7 +18,7 @@ var cuisineDimensions = {
   }
 }
 
-var svgcuisine = d3.select("#cuisines")
+var svgcuisine = d3.select("#cuisinesArea")
   .style("width", cuisineDimensions.width)
   .style("height", cuisineDimensions.height)
 
