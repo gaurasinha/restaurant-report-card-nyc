@@ -36,7 +36,6 @@ function zipColor(d) {
 
 var restData;
 d3.csv('assets/data/restrauntAvg.csv').then(function (data) {
-<<<<<<< HEAD
   // For each row in data, create a marker and add it to the map
   // For each row, columns `Latitude`, `Longitude`, and `Title` are required
   data.forEach(function (d, i) {
@@ -57,9 +56,7 @@ d3.csv('assets/data/restrauntAvg.csv').then(function (data) {
 
   showCuisine('11213')
 });
-=======
 
->>>>>>> 4a969260ba919ab73b62eba4710d2811e95932e2
 
 function style(feature) {
   return {
