@@ -4,7 +4,7 @@ var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19,
   attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(map);
-var groupColors = ['#1a9850', '#91cf60', '#d9ef8b', '#fee08b', '#fc8d59','#d73027' ]
+var groupColors = ['#7BB661', '#FEF65C', '#FF5348' ]
 var currentZip;
 var selectedZip;
 
@@ -29,10 +29,10 @@ var svgGroups;
 var genCuisine = d3.select("#cuisines")
 
 var scaleColor = d3.scaleSequential(d3.interpolateRdYlGn)
-  .domain(d3.extent(zipdata.features, d => d.properties.AvgScore > 0 ? d.properties.AvgScore : 2))
+  .domain(d3.extent(zipdata.features, d => d.properties.AvgScore > 0 ? -d.properties.AvgScore : -2))
 function zipColor(d) {
   if (d > 0)
-    return scaleColor(d)
+    return scaleColor(-d)
   else
     return '#666'
 }
@@ -60,7 +60,7 @@ function style(feature) {
     opacity: 1,
     color: 'white',
     dashArray: '3',
-    fillOpacity: 0.5
+    fillOpacity: 0.6
   };
 }
 
@@ -71,7 +71,7 @@ function highlightFeature(e) {
     weight: 3,
     color: '#666',
     dashArray: '',
-    fillOpacity: 0.5
+    fillOpacity: 0.6
   });
 
   layer.bringToFront();
@@ -160,13 +160,13 @@ function updateCuisine(zip){
 }
 
 function zipCuisneData(zip){
-  var cuisineGroup = d3.rollup(d3.filter(restData, x => x.ZIPCODE == zip), v => v.length, d => d['CUISINE DESCRIPTION'], d => Math.min(5, parseInt(d.AvgScore / 10)))
+  var cuisineGroup = d3.rollup(d3.filter(restData, x => x.ZIPCODE == zip), v => v.length, d => d['CUISINE DESCRIPTION'], d => Math.min(2, parseInt(d.AvgScore / 14)))
   //  d3.rollup(, v => v.length, d => Math.min(5,parseInt(d.AvgScore/5)))
   // console.log(d3.flatRollup(d3.filter(restData, x => x.ZIPCODE == zip), v => v.length, d => d['CUISINE DESCRIPTION'], d => Math.min(5, parseInt(d.AvgScore / 10))))
   var arrayData = []
   cuisineGroup.forEach(function(value, key) {
     sum = 0;
-    for (j = 0; j < 6; j++) {
+    for (j = 0; j < 3; j++) {
       if (value.get(j) != undefined){
         sum += value.get(j)
         arrayData.push([key,j,sum])}
