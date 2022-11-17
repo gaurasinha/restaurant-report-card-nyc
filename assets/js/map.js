@@ -11,23 +11,7 @@ var scaleColor = d3.scaleSequential(d3.interpolateRdYlGn)
 
 
 d3.csv('assets/data/restrauntAvg.csv').then(function (data) {
-  // For each row in data, create a marker and add it to the map
-  // For each row, columns `Latitude`, `Longitude`, and `Title` are required
-  data.forEach(function (d, i) {
-  
-  //log only the first 10 rows
-    if (i < 10) {
-      console.log(d);
-    }
 
-    var marker = L.marker([d.Latitude, d.Longitude], {
-      opacity: 1
-    }).bindPopup(d.DBA);
-
-    marker.addTo(map);
-  })
-
-});
 
 function style(feature) {
   return {
@@ -57,8 +41,38 @@ function resetHighlight(e) {
   geojson.resetStyle(e.target);
 }
 
+Number.prototype.between = function(a, b) {
+  var min = Math.min.apply(Math, [a, b]),
+    max = Math.max.apply(Math, [a, b]);
+  return this > min && this < max;
+};
+
+
 function zoomToFeature(e) {
   map.fitBounds(e.target.getBounds());
+  var geoBounds = e.target.getBounds();
+
+
+  //Add a marker for a restaurant if it falls within the geobounds
+  data.forEach(function (d, i) {
+  
+    lat = +d.Latitude
+    lng = +d.Longitude
+    if (lat.between(geoBounds._northEast.lat, geoBounds._southWest.lat) && lng.between(geoBounds._northEast.lng, geoBounds._southWest.lng)) {
+      var marker = L.marker([d.Latitude, d.Longitude], {
+        opacity: 1
+      }).bindPopup(d.DBA);
+
+    marker.addTo(map);
+  }
+})
+
+  console.log(geoBounds)
+  //console.log(test.between(geoBounds._northEast.lat, geoBounds._southWest.lat));
+  console.log("NorthEast: " + geoBounds._northEast.lat)
+  console.log("NorthEast: " + geoBounds._northEast.lng)
+
+
   console.log("Lat, Lon : " + e.latlng.lat + ", " + e.latlng.lng)
 }
 
@@ -74,3 +88,5 @@ geojson = L.geoJson(zipdata, {
   style: style,
   onEachFeature: onEachFeature
 }).addTo(map);
+
+});
