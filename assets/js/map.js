@@ -6,6 +6,7 @@ var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 var groupColors = ['#1a9850', '#91cf60', '#d9ef8b', '#fee08b', '#fc8d59','#d73027' ]
 var currentZip;
+var selectedZip;
 
 var cuisineDimensions = {
   width: 400,
@@ -38,23 +39,15 @@ var restData;
 d3.csv('assets/data/restrauntAvg.csv').then(function (data) {
   // For each row in data, create a marker and add it to the map
   // For each row, columns `Latitude`, `Longitude`, and `Title` are required
-  data.forEach(function (d, i) {
-    restData = data;
-    //draw markers of the first 100 rows
-    if (i < 100) {
-      var marker = L.marker([d.Latitude, d.Longitude], {
-        opacity: 1
-      }).bindPopup(d.DBA);
-      marker.addTo(map);
-    }
-  })
+
+  restData = data;
 
   geojson = L.geoJson(zipdata, {
     style: style,
     onEachFeature: onEachFeature
   }).addTo(map);
 
-  showCuisine('11213')
+  showCuisine('11385')
 });
 
 
@@ -147,6 +140,7 @@ function updateCuisine(zip){
     cuisinebars.enter()
       .append("rect")
       .merge(cuisinebars).transition()
+      .duration(700)
       .attr("y", d => yScale(d[0]))
       .attr('x', xScale(0))
 .attr("fill", (d,i) => groupColors[d[1]])
@@ -193,8 +187,8 @@ function showCuisine(zip) {
                         .append("rect")
                         .attr("y", d => yScale(d[0]))
                         .attr('x', xScale(0))
-                  .attr("fill", (d,i) => groupColors[d[1]])
-                  .attr("height", d => yScale.bandwidth())
-                  .attr("width", d => xScale(d[2]))
+                        .attr("fill", (d,i) => groupColors[d[1]])
+                        .attr("height", d => yScale.bandwidth())
+                        .attr("width", d => xScale(d[2]))
 
 }
