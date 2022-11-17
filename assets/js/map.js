@@ -4,34 +4,62 @@ var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19,
   attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(map);
+var groupColors = ['#1a9850', '#91cf60', '#d9ef8b', '#fee08b', '#fc8d59','#d73027' ]
+var currentZip;
 
+var cuisineDimensions = {
+  width: 960,
+  height: 400,
+  margin: {
+    top: 10,
+    bottom: 10,
+    right: 10,
+    left: 50
+  }
+}
+
+var svgcuisine = d3.select("#cuisines")
+  .style("width", cuisineDimensions.width)
+  .style("height", cuisineDimensions.height)
+
+var bars;
+var svgGroups;
 
 var scaleColor = d3.scaleSequential(d3.interpolateRdYlGn)
-  .domain(d3.extent(zipdata.features, d => +d.properties.AvgScore))
+  .domain(d3.extent(zipdata.features, d => d.properties.AvgScore > 0 ? d.properties.AvgScore : 2))
+function zipColor(d) {
+  if (d > 0)
+    return scaleColor(d)
+  else
+    return '#666'
+}
 
-
+var restData;
 d3.csv('assets/data/restrauntAvg.csv').then(function (data) {
   // For each row in data, create a marker and add it to the map
   // For each row, columns `Latitude`, `Longitude`, and `Title` are required
   data.forEach(function (d, i) {
-  
-  //log only the first 10 rows
-    if (i < 10) {
-      console.log(d);
+    restData = data;
+    //draw markers of the first 100 rows
+    if (i < 100) {
+      var marker = L.marker([d.Latitude, d.Longitude], {
+        opacity: 1
+      }).bindPopup(d.DBA);
+      marker.addTo(map);
     }
-
-    var marker = L.marker([d.Latitude, d.Longitude], {
-      opacity: 1
-    }).bindPopup(d.DBA);
-
-    marker.addTo(map);
   })
 
+  geojson = L.geoJson(zipdata, {
+    style: style,
+    onEachFeature: onEachFeature
+  }).addTo(map);
+
+  showCuisine('11213')
 });
 
 function style(feature) {
   return {
-    fillColor: scaleColor(feature.properties.AvgScore),
+    fillColor: zipColor(feature.properties.AvgScore),
     weight: 2,
     opacity: 1,
     color: 'white',
@@ -60,6 +88,7 @@ function resetHighlight(e) {
 function zoomToFeature(e) {
   map.fitBounds(e.target.getBounds());
   console.log("Lat, Lon : " + e.latlng.lat + ", " + e.latlng.lng)
+  updateCuisine(e.target.feature.properties.ZIPCODE)
 }
 
 function onEachFeature(feature, layer) {
@@ -70,7 +99,72 @@ function onEachFeature(feature, layer) {
   });
 }
 
-geojson = L.geoJson(zipdata, {
-  style: style,
-  onEachFeature: onEachFeature
-}).addTo(map);
+function updateCuisine(zip){
+  currentZip = zipCuisneData(zip);
+  var cuisinebars = svgcuisine.select('g').selectAll('rect').data(currentZip)
+  cuisinebars.exit().remove();
+  var cuisineKeys = getCuisineKeys(zip)
+  currentZip = zipCuisneData(zip)
+  var maxSum = d3.max(currentZip, d => d[2])
+  var yScale = d3.scaleBand()
+    .domain(cuisineKeys)
+    .range([cuisineDimensions.margin.top, cuisineDimensions.height - cuisineDimensions.margin.bottom])
+    .padding([0.2])
+  var xScale = d3.scaleLinear()
+    .domain([0, maxSum])
+    .range([cuisineDimensions.margin.left, cuisineDimensions.width - cuisineDimensions.margin.right])
+
+    cuisinebars.enter()
+      .append("rect")
+      .merge(cuisinebars).transition()
+      .attr("y", d => yScale(d[0]))
+      .attr('x', xScale(0))
+.attr("fill", (d,i) => groupColors[d[1]])
+.attr("height", d => yScale.bandwidth())
+.attr("width", d => xScale(d[2]))
+
+}
+
+function zipCuisneData(zip){
+  var cuisineGroup = d3.rollup(d3.filter(restData, x => x.ZIPCODE == zip), v => v.length, d => d['CUISINE DESCRIPTION'], d => Math.min(5, parseInt(d.AvgScore / 10)))
+  //  d3.rollup(, v => v.length, d => Math.min(5,parseInt(d.AvgScore/5)))
+  // console.log(d3.flatRollup(d3.filter(restData, x => x.ZIPCODE == zip), v => v.length, d => d['CUISINE DESCRIPTION'], d => Math.min(5, parseInt(d.AvgScore / 10))))
+  var arrayData = []
+  cuisineGroup.forEach(function(value, key) {
+    sum = 0;
+    for (j = 0; j < 6; j++) {
+      if (value.get(j) != undefined){
+        sum += value.get(j)
+        arrayData.push([key,j,sum])}
+    }
+  })
+  return arrayData.reverse()
+}
+
+function getCuisineKeys(zip){
+  var cuisineGroup = d3.group(d3.filter(restData, x => x.ZIPCODE == zip), d => d['CUISINE DESCRIPTION'])
+  return cuisineGroup.keys()
+}
+
+function showCuisine(zip) {
+  var cuisineKeys = getCuisineKeys(zip)
+  currentZip = zipCuisneData(zip)
+  var maxSum = d3.max(currentZip, d => d[2])
+  var yScale = d3.scaleBand()
+    .domain(cuisineKeys)
+    .range([cuisineDimensions.margin.top, cuisineDimensions.height - cuisineDimensions.margin.bottom])
+    .padding([0.2])
+  var xScale = d3.scaleLinear()
+    .domain([0, maxSum])
+    .range([cuisineDimensions.margin.left, cuisineDimensions.width - cuisineDimensions.margin.right])
+  svgcuisine.append("g").selectAll("rect")
+                        .data(currentZip)
+                        .enter()
+                        .append("rect")
+                        .attr("y", d => yScale(d[0]))
+                        .attr('x', xScale(0))
+                  .attr("fill", (d,i) => groupColors[d[1]])
+                  .attr("height", d => yScale.bandwidth())
+                  .attr("width", d => xScale(d[2]))
+
+}
