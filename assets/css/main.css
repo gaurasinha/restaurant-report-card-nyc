@@ -2637,7 +2637,7 @@ input, select, textarea {
 	}
 
 	header.major {
-		margin-bottom: 3em;
+		margin-bottom: 1.5em;
 	}
 
 		header.major h2 {
@@ -2649,7 +2649,7 @@ input, select, textarea {
 				content: '';
 				width: 3.25em;
 				height: 2px;
-				margin: 0.7em 0 1em 0;
+				margin: 0.1em 0 .1em 0;
 				border-radius: 2px;
 			}
 
@@ -3581,7 +3581,7 @@ input, select, textarea {
 		}
 
 		#main > .main {
-			padding: 5em .5em 3em .5em ;
+			padding: 2em .5em 3em .5em ;
 			border-top: solid 1px #dddddd;
 		}
 
