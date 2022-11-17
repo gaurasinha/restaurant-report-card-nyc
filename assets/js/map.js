@@ -39,8 +39,6 @@ function zipColor(d) {
 
 var restData;
 d3.csv('assets/data/restrauntAvg.csv').then(function (data) {
-  // For each row in data, create a marker and add it to the map
-  // For each row, columns `Latitude`, `Longitude`, and `Title` are required
 
   restData = data;
 
@@ -99,17 +97,17 @@ function resetHighlight(e) {
 function zoomToFeature(e) {
   map.fitBounds(e.target.getBounds());
   updateCuisine(e.target.feature.properties.ZIPCODE)
-  var geoBounds = e.target.getBounds();
 
-  latRange = calcRange(geoBounds._northEast.lat, geoBounds._southWest.lat)
-  lngRange = calcRange(geoBounds._northEast.lng, geoBounds._southWest.lng)
-
-  //filter data falling within geobounds
-  filteredData = gradeData.filter(function(d){ return  (d.Latitude >= latRange[0] && d.Latitude <= latRange[1] && d.Longitude >= lngRange[0] && d.Longitude <= lngRange[1]) })
-  console.log(filteredData)
-  filteredData.forEach(function (d,i) {
-
-    var div = $('<div id="' + d.CAMIS + '" style="width: 200px; height:200px;"><svg id="chart"></svg></div>')[0];
+  //filter data falling with clicked zipcode
+  filteredData = restData.filter(function(d){ return  (d.ZIPCODE == e.target.feature.properties.ZIPCODE) })
+  filteredData.forEach(function (d) {
+    inspectData = gradeData.filter(function (e){return (d.Latitude==e.Latitude)&&(d.DBA==e.DBA)})
+    var inspectionResult = ""
+    inspectData.forEach(function (e){
+      inspectionResult+=e.GRADE;
+    }
+    )
+    var div = $('<div id="'+  d.CAMIS +'" style="width: 200px; height:200px;"><p>'+inspectionResult+'</p><svg id="chart"></svg></div>')[0];
     var popup = L.popup().setContent(div);
 
     var marker =L.marker([d.Latitude,d.Longitude], {
@@ -123,12 +121,6 @@ function zoomToFeature(e) {
             var svg = d3.select(div).select("svg").attr("width", 200).attr("height", 200);
             svg.append("rect").attr("width", 150).attr("height", 150).style("fill", "lightBlue");       
     }
-
-  console.log(geoBounds)
-  //console.log(test.between(geoBounds._northEast.lat, geoBounds._southWest.lat));
-  console.log("NorthEast: " + geoBounds._northEast.lat)
-  console.log("NorthEast: " + geoBounds._northEast.lng)
-  console.log("Lat, Lon : " + e.latlng.lat + ", " + e.latlng.lng)
 }
 
 function onEachFeature(feature, layer) {
@@ -207,5 +199,4 @@ function showCuisine(zip) {
                         .attr("fill", (d,i) => groupColors[d[1]])
                         .attr("height", d => yScale.bandwidth())
                         .attr("width", d => xScale(d[2]))
-
 }
