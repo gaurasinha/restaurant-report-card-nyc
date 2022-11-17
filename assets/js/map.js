@@ -26,6 +26,8 @@ var svgcuisine = d3.select("#cuisinesArea")
 var bars;
 var svgGroups;
 
+var genCuisine = d3.select("#cuisines")
+
 var scaleColor = d3.scaleSequential(d3.interpolateRdYlGn)
   .domain(d3.extent(zipdata.features, d => d.properties.AvgScore > 0 ? d.properties.AvgScore : 2))
 function zipColor(d) {
