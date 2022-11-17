@@ -103,11 +103,19 @@ function zoomToFeature(e) {
   console.log(filteredData)
   filteredData.forEach(function (d,i) {
 
+    var div = $('<div id="' + d.DBA + '" style="width: 200px; height:200px;"><svg/></div>')[0];
+    var popup = L.popup().setContent(div);
+
     var marker =L.marker([d.Latitude,d.Longitude], {
       opacity: 1
-    }).bindPopup(d.DBA)
+    }).bindPopup(popup)
     marker.addTo(map)
   })
+
+  if (d.DBA) {
+            var svg = d3.select(div).select("svg").attr("width", 200).attr("height", 200);
+            svg.append("rect").attr("width", 150).attr("height", 150).style("fill", "lightBlue");       
+    }
 
   console.log(geoBounds)
   //console.log(test.between(geoBounds._northEast.lat, geoBounds._southWest.lat));
