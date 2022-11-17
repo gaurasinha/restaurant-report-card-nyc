@@ -97,13 +97,14 @@ function resetHighlight(e) {
 
 function zoomToFeature(e) {
   map.fitBounds(e.target.getBounds());
+  updateCuisine(e.target.feature.properties.ZIPCODE)
   var geoBounds = e.target.getBounds();
 
   latRange = calcRange(geoBounds._northEast.lat, geoBounds._southWest.lat)
   lngRange = calcRange(geoBounds._northEast.lng, geoBounds._southWest.lng)
 
   //filter data falling within geobounds
-  filteredData = data.filter(function(d){ return  (d.Latitude >= latRange[0] && d.Latitude <= latRange[1] && d.Longitude >= lngRange[0] && d.Longitude <= lngRange[1]) })
+  filteredData = restData.filter(function(d){ return  (d.Latitude >= latRange[0] && d.Latitude <= latRange[1] && d.Longitude >= lngRange[0] && d.Longitude <= lngRange[1]) })
   console.log(filteredData)
   filteredData.forEach(function (d,i) {
 
@@ -118,7 +119,6 @@ function zoomToFeature(e) {
   console.log("NorthEast: " + geoBounds._northEast.lat)
   console.log("NorthEast: " + geoBounds._northEast.lng)
   console.log("Lat, Lon : " + e.latlng.lat + ", " + e.latlng.lng)
-  updateCuisine(e.target.feature.properties.ZIPCODE)
 }
 
 function onEachFeature(feature, layer) {
