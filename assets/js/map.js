@@ -109,7 +109,7 @@ function zoomToFeature(e) {
   console.log(filteredData)
   filteredData.forEach(function (d,i) {
 
-    var div = $('<div id="' + d.CAMIS + '" style="width: 200px; height:200px;"><svg id="chart"></svg></div>')[0];
+    var div = $('<div id="' + d.CAMIS + '" style="width: 200px; height:200px;"><p style="font-weight: bold;color:darkorange">Food Grades: 2021-22</p><p style="font-weight: bold;">'+d.DBA+'</p><svg id="chart"></svg></div>')[0];
     var popup = L.popup().setContent(div);
 
     var marker =L.marker([d.Latitude,d.Longitude], {
