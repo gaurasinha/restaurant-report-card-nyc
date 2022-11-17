@@ -52,6 +52,12 @@ d3.csv('assets/data/restrauntAvg.csv').then(function (data) {
   showCuisine('11385')
 });
 
+var gradeData;
+d3.csv('assets/data/Restaurant_Grades_converted.csv').then(function(data){
+
+  gradeData = data
+})
+
 
 function style(feature) {
   return {
@@ -99,11 +105,11 @@ function zoomToFeature(e) {
   lngRange = calcRange(geoBounds._northEast.lng, geoBounds._southWest.lng)
 
   //filter data falling within geobounds
-  filteredData = restData.filter(function(d){ return  (d.Latitude >= latRange[0] && d.Latitude <= latRange[1] && d.Longitude >= lngRange[0] && d.Longitude <= lngRange[1]) })
+  filteredData = gradeData.filter(function(d){ return  (d.Latitude >= latRange[0] && d.Latitude <= latRange[1] && d.Longitude >= lngRange[0] && d.Longitude <= lngRange[1]) })
   console.log(filteredData)
   filteredData.forEach(function (d,i) {
 
-    var div = $('<div id="' + d.DBA + '" style="width: 200px; height:200px;"><svg/></div>')[0];
+    var div = $('<div id="' + d.CAMIS + '" style="width: 200px; height:200px;"><svg id="chart"></svg></div>')[0];
     var popup = L.popup().setContent(div);
 
     var marker =L.marker([d.Latitude,d.Longitude], {
@@ -113,6 +119,7 @@ function zoomToFeature(e) {
   })
 
   if (d.DBA) {
+
             var svg = d3.select(div).select("svg").attr("width", 200).attr("height", 200);
             svg.append("rect").attr("width", 150).attr("height", 150).style("fill", "lightBlue");       
     }
