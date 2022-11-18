@@ -6,7 +6,7 @@ var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 var groupColors = ['#7BB661', '#FEF65C', '#FF5348' ]
 var currentZip;
-var selectedZip;
+var selectedZip = [];
 
 var cuisineDimensions = {
   width: 400,
@@ -25,6 +25,7 @@ var svgcuisine = d3.select("#cuisinesArea")
 
 var bars;
 var svgGroups;
+var markerList = [];
 
 var genCuisine = d3.select("#cuisines")
 
@@ -38,6 +39,7 @@ function zipColor(d) {
 }
 
 var restData;
+var gradeData;
 d3.csv('assets/data/restrauntAvg.csv').then(function (data) {
 
   restData = data;
@@ -46,15 +48,18 @@ d3.csv('assets/data/restrauntAvg.csv').then(function (data) {
     style: style,
     onEachFeature: onEachFeature
   }).addTo(map);
+  d3.csv('assets/data/Restaurant_Grades_converted.csv').then(function(dataGrade){
 
-  showCuisine('11385')
+    gradeData = dataGrade
+    setTimeout(showCuisine('11385'), 1000);
+    map.flyToBounds([
+      [40.714007978569455, -73.83696277938968],
+      [40.682367054019416, -73.9240401141906]
+  ]);
+  })
 });
 
-var gradeData;
-d3.csv('assets/data/Restaurant_Grades_converted.csv').then(function(data){
 
-  gradeData = data
-})
 
 
 function style(feature) {
@@ -95,11 +100,20 @@ function resetHighlight(e) {
 
 
 function zoomToFeature(e) {
+  var markerList = []
   map.fitBounds(e.target.getBounds());
   updateCuisine(e.target.feature.properties.ZIPCODE)
+  if(selectedZip.includes(e.target.feature.properties.ZIPCODE)){
+    for (var i = 0; i < selectedZip.length; i++) {
+      if (selectedZip[i] === e.target.feature.properties.ZIPCODE) 
+          selectedZip.splice(i, 1);
+      }
+  }
+  else
+    selectedZip.push(e.target.feature.properties.ZIPCODE)
 
   //filter data falling with clicked zipcode
-  filteredData = restData.filter(d=>d.ZIPCODE == e.target.feature.properties.ZIPCODE)
+  filteredData = restData.filter(d=> selectedZip.includes(d.ZIPCODE))
   filteredData.forEach(function (d) {
     inspectData = gradeData.filter(function (e){return (d.Latitude==e.Latitude)&&(d.DBA==e.DBA)})
     var inspectionResult = ""
@@ -113,9 +127,18 @@ function zoomToFeature(e) {
     var marker =L.marker([d.Latitude,d.Longitude], {
       opacity: 1
     }).bindPopup(popup)
-    marker.addTo(map)
-  })
-
+    markerList.push(marker)
+  }
+  )
+  
+  var markerLayer = L.layerGroup(markerList);
+  if (map.hasLayer(markerLayer)){
+    markerLayer.clearLayers();
+    map.removeLayer(markerLayer);
+  }
+  else{
+    map.addLayer(markerLayer);
+  }
   if (d.DBA) {
 
             var svg = d3.select(div).select("svg").attr("width", 200).attr("height", 200);
@@ -146,20 +169,20 @@ function updateCuisine(zip){
     .domain([0, maxSum])
     .range([cuisineDimensions.margin.left, cuisineDimensions.width - cuisineDimensions.margin.right])
 
-    cuisinebars.enter()
+  cuisinebars.enter()
       .append("rect")
       .merge(cuisinebars).transition()
       .duration(700)
       .attr("y", d => yScale(d[0]))
       .attr('x', xScale(0))
-.attr("fill", (d,i) => groupColors[d[1]])
-.attr("height", d => yScale.bandwidth())
-.attr("width", d => xScale(d[2]))
+      .attr("fill", (d,i) => groupColors[d[1]])
+      .attr("height", d => yScale.bandwidth())
+      .attr("width", d => xScale(d[2]))
 
 }
 
 function zipCuisneData(zip){
-  var cuisineGroup = d3.rollup(d3.filter(restData, x => x.ZIPCODE == zip), v => v.length, d => d['CUISINE DESCRIPTION'], d => Math.min(2, parseInt(d.AvgScore / 14)))
+  var cuisineGroup = d3.rollup(d3.filter(restData, x =>selectedZip.includes(x.ZIPCODE)), v => v.length, d => d['CUISINE DESCRIPTION'], d => Math.min(2, parseInt(d.AvgScore / 14)))
   //  d3.rollup(, v => v.length, d => Math.min(5,parseInt(d.AvgScore/5)))
   // console.log(d3.flatRollup(d3.filter(restData, x => x.ZIPCODE == zip), v => v.length, d => d['CUISINE DESCRIPTION'], d => Math.min(5, parseInt(d.AvgScore / 10))))
   var arrayData = []
@@ -175,11 +198,12 @@ function zipCuisneData(zip){
 }
 
 function getCuisineKeys(zip){
-  var cuisineGroup = d3.group(d3.filter(restData, x => x.ZIPCODE == zip), d => d['CUISINE DESCRIPTION'])
+  var cuisineGroup = d3.group(d3.filter(restData, x => selectedZip.includes(x.ZIPCODE)), d => d['CUISINE DESCRIPTION'])
   return cuisineGroup.keys()
 }
 
 function showCuisine(zip) {
+  selectedZip.push(zip)
   var cuisineKeys = getCuisineKeys(zip)
   currentZip = zipCuisneData(zip)
   var maxSum = d3.max(currentZip, d => d[2])
@@ -199,4 +223,18 @@ function showCuisine(zip) {
                         .attr("fill", (d,i) => groupColors[d[1]])
                         .attr("height", d => yScale.bandwidth())
                         .attr("width", d => xScale(d[2]))
+  filteredData = restData.filter(d=> selectedZip.includes(d.ZIPCODE))
+  filteredData.forEach(function (d) {
+    inspectData = gradeData.filter(function (e){return (d.Latitude==e.Latitude)&&(d.DBA==e.DBA)})
+  var inspectionResult = ""
+  inspectData.forEach(function (e){
+    inspectionResult+=e.INSPECTION_DATE + ': ' + e.GRADE +'<br />';
+  })
+  var div = $('<div id="'+  d.CAMIS +'" style="width: 200px; height:200px;"><p style="font-weight: bold;color:darkorange">Food Grades: 2021-22</p><p style="font-weight: bold;">'+d.DBA+'</p><p>'+inspectionResult+'</p><svg id="chart"></svg></div>')[0];
+  var popup = L.popup().setContent(div);
+  marker =L.marker([d.Latitude,d.Longitude], {
+    opacity: 1
+  }).bindPopup(popup)
+  marker.addTo(map)
+})
 }
