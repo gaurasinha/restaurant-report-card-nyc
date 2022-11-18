@@ -291,12 +291,78 @@ function showCuisine(zip) {
                         .attr("width", d => xScale(d[2]))
   filteredData = restData.filter(d=> selectedZip.includes(d.ZIPCODE))
   filteredData.forEach(function (d) {
-    inspectData = gradeData.filter(function (e){return (d.Latitude==e.Latitude)&&(d.DBA==e.DBA)})
-  var inspectionResult = ""
-  inspectData.forEach(function (e){
-    inspectionResult+=e.INSPECTION_DATE + ': ' + e.GRADE +'<br />';
-  })
-  var div = $('<div id="'+  d.CAMIS +'" style="width: 200px; height:200px;"><p style="font-weight: bold;color:darkorange">Food Grades: 2021-22</p><p style="font-weight: bold;">'+d.DBA+'</p><p>'+inspectionResult+'</p><svg id="chart"></svg></div>')[0];
+  inspectData = gradeData.filter(function (e){return (d.Latitude==e.Latitude)&&(d.DBA==e.DBA)})
+  // var inspectionResult = ""
+  // inspectData.forEach(function (e){
+  //   inspectionResult+=e.INSPECTION_DATE + ': ' + e.GRADE +'<br />';
+  // })
+  // var div = $('<div id="'+  d.CAMIS +'" style="width: 200px; height:200px;"><p style="font-weight: bold;color:darkorange">Food Grades: 2021-22</p><p style="font-weight: bold;">'+d.DBA+'</p><p>'+inspectionResult+'</p><svg id="chart"></svg></div>')[0];
+  
+  var div = $('<div id="'+  d.CAMIS +'" style="width: 200px; height:170px;"><span style="font-weight: bold;color:darkorange">Food Grades: 2021-22</span><br><span style="font-weight: bold;color: black;">'+d.DBA+'</span><svg id="chart"></svg></div>')[0];
+
+
+  var xAccessor = d => d.INSPECTION_DATE
+  var yAccessor = d => d.GRADE 
+
+      var dimensions = {
+        width: 200,
+        height: 130,
+        margin: {
+          top: 10, right: 10, bottom: 45, left: 20
+        }
+      }
+
+    var svg = d3.select(div).select("#chart")
+                .style("width", dimensions.width)
+                .style("height", dimensions.height)
+    var yScale = d3.scaleBand()
+                    .domain(["C","B","A"])
+                    .range([dimensions.height-dimensions.margin.bottom,dimensions.margin.bottom])
+
+    var xScale = d3.scaleBand()
+                    .domain(inspectData.map(xAccessor))
+                    .range([dimensions.margin.left, dimensions.width - dimensions.margin.left])
+                    .padding(0.5)
+
+     var fillColor = d3.scaleOrdinal()
+              .domain(["C","B","A"])
+              .range(["red","yellow","green"])
+
+     var dots = svg.append("g")
+                      .selectAll("circle")
+                      .data(inspectData)
+                      .enter()
+                      .append("circle")
+                      .attr("cx", d => xScale(xAccessor(d)))
+                      .attr("cy", d => yScale(yAccessor(d)))
+                      .attr("r", 5)
+                      .attr("fill", d=>fillColor(yAccessor(d)))
+
+      svg.append("path")
+      .datum(inspectData)
+      .attr("fill", "none")
+      .attr("stroke", "steelblue")
+      .attr("stroke-width", 1.5)
+      .attr("d", d3.line()
+        .x(d=>xScale(xAccessor(d)))
+        .y(d => yScale(yAccessor(d)))
+        )
+
+     var xAxisgen = d3.axisBottom().scale(xScale)
+     var yAxisgen = d3.axisLeft().scale(yScale)
+
+     var xAxis = svg.append("g")
+                    .call(xAxisgen)
+                    .style("transform", `translateY(${dimensions.height - dimensions.margin.bottom}px)`)
+                    .selectAll("text")
+                    .style("text-anchor", "end")
+                    //.text("")
+                    .attr("transform", "rotate(-35)")
+                    
+     var yAxis = svg.append("g")
+                    .call(yAxisgen)
+                    .style("transform", `translateX(${dimensions.margin.left}px)`)
+
   var popup = L.popup().setContent(div);
   marker =L.marker([d.Latitude,d.Longitude], {
     opacity: 1
