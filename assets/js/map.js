@@ -122,7 +122,7 @@ function zoomToFeature(e) {
     // }
     // )
 
-  var div = $('<div id="'+  d.CAMIS +'" style="width: 200px; height:250px;"><p style="font-weight: bold;color:darkorange">Food Grades: 2021-22</p><p style="font-weight: bold;">'+d.DBA+'</p><svg id="chart"></svg></div>')[0];
+  var div = $('<div id="'+  d.CAMIS +'" style="width: 200px; height:170px;"><span style="font-weight: bold;color:darkorange">Food Grades: 2021-22</span><br><span style="font-weight: bold;color: black;">'+d.DBA+'</span><svg id="chart"></svg></div>')[0];
 
 
   var xAccessor = d => d.INSPECTION_DATE
@@ -132,7 +132,7 @@ function zoomToFeature(e) {
         width: 200,
         height: 130,
         margin: {
-          top: 10, right: 10, bottom: 40, left: 20
+          top: 10, right: 10, bottom: 45, left: 20
         }
       }
                     
@@ -181,8 +181,8 @@ function zoomToFeature(e) {
                     .style("transform", `translateY(${dimensions.height - dimensions.margin.bottom}px)`)
                     .selectAll("text")
                     .style("text-anchor", "end")
-                    .text("")
-                    .attr("transform", "rotate(-45)")
+                    //.text("")
+                    .attr("transform", "rotate(-35)")
                     
      var yAxis = svg.append("g")
                     .call(yAxisgen)
