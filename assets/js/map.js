@@ -25,7 +25,7 @@ var svgcuisine = d3.select("#cuisinesArea")
 
 var bars;
 var svgGroups;
-var markerList = [];
+var markerLayer;
 
 var genCuisine = d3.select("#cuisines")
 
@@ -135,8 +135,7 @@ function zoomToFeature(e) {
           top: 10, right: 10, bottom: 45, left: 20
         }
       }
-                    
-    
+
     var svg = d3.select(div).select("#chart")
                 .style("width", dimensions.width)
                 .style("height", dimensions.height)
@@ -183,7 +182,7 @@ function zoomToFeature(e) {
                     .style("text-anchor", "end")
                     //.text("")
                     .attr("transform", "rotate(-35)")
-                    
+
      var yAxis = svg.append("g")
                     .call(yAxisgen)
                     .style("transform", `translateX(${dimensions.margin.left}px)`)
@@ -196,15 +195,9 @@ function zoomToFeature(e) {
     markerList.push(marker)
   }
   )
-  
-  var markerLayer = L.layerGroup(markerList);
-  if (map.hasLayer(markerLayer)){
-    markerLayer.clearLayers();
-    map.removeLayer(markerLayer);
-  }
-  else{
-    map.addLayer(markerLayer);
-  }
+  markerLayer.clearLayers();
+  markerLayer = L.layerGroup(markerList).addTo(map);
+
   if (d.DBA) {
 
             var svg = d3.select(div).select("svg").attr("width", 200).attr("height", 200);
@@ -225,7 +218,6 @@ function updateCuisine(zip){
   var cuisinebars = svgcuisine.select('g').selectAll('rect').data(currentZip)
   cuisinebars.exit().remove();
   var cuisineKeys = getCuisineKeys(zip)
-  currentZip = zipCuisneData(zip)
   var maxSum = d3.max(currentZip, d => d[2])
   var yScale = d3.scaleBand()
     .domain(cuisineKeys)
@@ -270,6 +262,7 @@ function getCuisineKeys(zip){
 
 function showCuisine(zip) {
   selectedZip.push(zip)
+  var markerList = [];
   var cuisineKeys = getCuisineKeys(zip)
   currentZip = zipCuisneData(zip)
   var maxSum = d3.max(currentZip, d => d[2])
@@ -367,6 +360,7 @@ function showCuisine(zip) {
   marker =L.marker([d.Latitude,d.Longitude], {
     opacity: 1
   }).bindPopup(popup)
-  marker.addTo(map)
+  markerList.push(marker)
 })
+markerLayer = L.layerGroup(markerList).addTo(map)
 }
