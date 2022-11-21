@@ -5,7 +5,7 @@ var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(map);
 var groupColors = ['#7BB661', '#FEF65C', '#FF5348' ]
-var currentZip;
+var selectedData;
 var selectedZip = [];
 
 var cuisineDimensions = {
@@ -102,7 +102,6 @@ function resetHighlight(e) {
 function zoomToFeature(e) {
   var markerList = []
   map.fitBounds(e.target.getBounds());
-  updateCuisine(e.target.feature.properties.ZIPCODE)
   if(selectedZip.includes(e.target.feature.properties.ZIPCODE)){
     for (var i = 0; i < selectedZip.length; i++) {
       if (selectedZip[i] === e.target.feature.properties.ZIPCODE) 
@@ -112,6 +111,7 @@ function zoomToFeature(e) {
   else
     selectedZip.push(e.target.feature.properties.ZIPCODE)
 
+  updateCuisine()
   //filter data falling with clicked zipcode
   filteredData = restData.filter(d=> selectedZip.includes(d.ZIPCODE))
   filteredData.forEach(function (d) {
@@ -213,12 +213,12 @@ function onEachFeature(feature, layer) {
   });
 }
 
-function updateCuisine(zip){
-  currentZip = zipCuisneData(zip);
-  var cuisinebars = svgcuisine.select('g').selectAll('rect').data(currentZip)
+function updateCuisine(){
+  selectedData = zipCuisneData();
+  var cuisinebars = svgcuisine.select('g').selectAll('rect').data(selectedData)
   cuisinebars.exit().remove();
-  var cuisineKeys = getCuisineKeys(zip)
-  var maxSum = d3.max(currentZip, d => d[2])
+  var cuisineKeys = getCuisineKeys()
+  var maxSum = d3.max(selectedData, d => d[2])
   var yScale = d3.scaleBand()
     .domain(cuisineKeys)
     .range([cuisineDimensions.margin.top, cuisineDimensions.height - cuisineDimensions.margin.bottom])
@@ -239,7 +239,7 @@ function updateCuisine(zip){
 
 }
 
-function zipCuisneData(zip){
+function zipCuisneData(){
   var cuisineGroup = d3.rollup(d3.filter(restData, x =>selectedZip.includes(x.ZIPCODE)), v => v.length, d => d['CUISINE DESCRIPTION'], d => Math.min(2, parseInt(d.AvgScore / 14)))
   //  d3.rollup(, v => v.length, d => Math.min(5,parseInt(d.AvgScore/5)))
   // console.log(d3.flatRollup(d3.filter(restData, x => x.ZIPCODE == zip), v => v.length, d => d['CUISINE DESCRIPTION'], d => Math.min(5, parseInt(d.AvgScore / 10))))
@@ -255,7 +255,7 @@ function zipCuisneData(zip){
   return arrayData.reverse()
 }
 
-function getCuisineKeys(zip){
+function getCuisineKeys(){
   var cuisineGroup = d3.group(d3.filter(restData, x => selectedZip.includes(x.ZIPCODE)), d => d['CUISINE DESCRIPTION'])
   return cuisineGroup.keys()
 }
@@ -263,9 +263,9 @@ function getCuisineKeys(zip){
 function showCuisine(zip) {
   selectedZip.push(zip)
   var markerList = [];
-  var cuisineKeys = getCuisineKeys(zip)
-  currentZip = zipCuisneData(zip)
-  var maxSum = d3.max(currentZip, d => d[2])
+  var cuisineKeys = getCuisineKeys()
+  selectedData = zipCuisneData()
+  var maxSum = d3.max(selectedData, d => d[2])
   var yScale = d3.scaleBand()
     .domain(cuisineKeys)
     .range([cuisineDimensions.margin.top, cuisineDimensions.height - cuisineDimensions.margin.bottom])
@@ -274,7 +274,7 @@ function showCuisine(zip) {
     .domain([0, maxSum])
     .range([cuisineDimensions.margin.left, cuisineDimensions.width - cuisineDimensions.margin.right])
   svgcuisine.append("g").selectAll("rect")
-                        .data(currentZip)
+                        .data(selectedData)
                         .enter()
                         .append("rect")
                         .attr("y", d => yScale(d[0]))
@@ -351,7 +351,7 @@ function showCuisine(zip) {
                     .style("text-anchor", "end")
                     //.text("")
                     .attr("transform", "rotate(-35)")
-                    
+
      var yAxis = svg.append("g")
                     .call(yAxisgen)
                     .style("transform", `translateX(${dimensions.margin.left}px)`)
