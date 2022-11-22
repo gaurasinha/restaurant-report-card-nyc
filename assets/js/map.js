@@ -4,9 +4,14 @@ var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19,
   attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(map);
+var legendBR = L.control({position: 'bottomright'});
+L.Icon.Default.imagePath = '/images/'
+
 var groupColors = ['#7BB661', '#FEF65C', '#FF5348' ]
+var markerIcon = ['marker-icon-green.png', 'marker-icon-yellow.png', 'marker-icon-red.png']
 var selectedData;
 var selectedZip = [];
+var selectedCuisineGrade = [];
 
 var cuisineDimensions = {
   width: 400,
@@ -18,6 +23,17 @@ var cuisineDimensions = {
     left: 10
   }
 }
+
+
+legendBR.onAdd = function (map) {
+
+  var div = L.DomUtil.create('div', 'info legend');
+  div.innerHTML +=
+          '<h4\>Area Average Food Safety</h4\>Unsafe <svg width="70" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg"\><defs\><linearGradient id="Gradient1"\><stop offset="0%" stop-color="rgb(165, 0, 38)"  stop-opacity="0.7"/\><stop offset="50%" stop-color="rgb(249, 247, 174)"  stop-opacity="0.7"/\><stop offset="100%" stop-color="rgb(0, 104, 55)"  stop-opacity="0.7"/\></linearGradient\></defs\><rect x="0" y="0" width="70" height="20" stroke="black" fill="url(#Gradient1)" /\></svg\> Safe';
+  return div;
+};
+
+legendBR.addTo(map);
 
 var svgcuisine = d3.select("#cuisinesArea")
   .style("width", cuisineDimensions.width)
@@ -69,7 +85,7 @@ function style(feature) {
     opacity: 1,
     color: 'white',
     dashArray: '3',
-    fillOpacity: 0.6
+    fillOpacity: 0.7
   };
 }
 
@@ -80,7 +96,7 @@ function highlightFeature(e) {
     weight: 3,
     color: '#666',
     dashArray: '',
-    fillOpacity: 0.6
+    fillOpacity: 0.4
   });
 
   layer.bringToFront();
@@ -190,7 +206,8 @@ function zoomToFeature(e) {
     var popup = L.popup().setContent(div);
 
     var marker =L.marker([d.Latitude,d.Longitude], {
-      opacity: 1
+      opacity: 1,
+      icon: new L.Icon.Default({iconUrl:markerIcon[Math.min(2, parseInt(d.AvgScore / 14))],shadowUrl:'marker-shadow.png'})
     }).bindPopup(popup)
     markerList.push(marker)
   }
@@ -214,7 +231,7 @@ function onEachFeature(feature, layer) {
 }
 
 function updateCuisine(){
-  selectedData = zipCuisneData();
+  selectedData = updateSelectedData();
   var cuisinebars = svgcuisine.select('g').selectAll('rect').data(selectedData)
   cuisinebars.exit().remove();
   var cuisineKeys = getCuisineKeys()
@@ -239,7 +256,7 @@ function updateCuisine(){
 
 }
 
-function zipCuisneData(){
+function updateSelectedData(){
   var cuisineGroup = d3.rollup(d3.filter(restData, x =>selectedZip.includes(x.ZIPCODE)), v => v.length, d => d['CUISINE DESCRIPTION'], d => Math.min(2, parseInt(d.AvgScore / 14)))
   //  d3.rollup(, v => v.length, d => Math.min(5,parseInt(d.AvgScore/5)))
   // console.log(d3.flatRollup(d3.filter(restData, x => x.ZIPCODE == zip), v => v.length, d => d['CUISINE DESCRIPTION'], d => Math.min(5, parseInt(d.AvgScore / 10))))
@@ -264,7 +281,7 @@ function showCuisine(zip) {
   selectedZip.push(zip)
   var markerList = [];
   var cuisineKeys = getCuisineKeys()
-  selectedData = zipCuisneData()
+  selectedData = updateSelectedData()
   var maxSum = d3.max(selectedData, d => d[2])
   var yScale = d3.scaleBand()
     .domain(cuisineKeys)
@@ -358,7 +375,8 @@ function showCuisine(zip) {
 
   var popup = L.popup().setContent(div);
   marker =L.marker([d.Latitude,d.Longitude], {
-    opacity: 1
+    opacity: 1,
+    icon: new L.Icon.Default({iconUrl:markerIcon[Math.min(2, parseInt(d.AvgScore / 14))],shadowUrl:'marker-shadow.png'})
   }).bindPopup(popup)
   markerList.push(marker)
 })
