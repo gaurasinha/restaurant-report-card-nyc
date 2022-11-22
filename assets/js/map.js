@@ -236,9 +236,10 @@ function onEachFeature(feature, layer) {
 
 function updateCuisine(){
   selectedData = updateSelectedData();
-  var cuisinebars = svgcuisine.select('g').selectAll('rect').data(selectedData)
+  var cuisineKeys = getCuisineKeys(selectedData)
+  topData = d3.filter(selectedData, d => cuisineKeys.includes(d[0]))
+  var cuisinebars = svgcuisine.select('g').selectAll('rect').data(topData)
   cuisinebars.exit().remove();
-  var cuisineKeys = getCuisineKeys()
   var maxSum = d3.max(selectedData, d => d[2])
   var yScaleCBar = d3.scaleBand()
     .domain(cuisineKeys)
@@ -276,19 +277,21 @@ function updateSelectedData(){
         arrayData.push([key,j,sum])}
     }
   })
-  return arrayData.reverse()
+  arrayData.sort((a, b) => b[2] - a[2])
+  return arrayData
 }
 
-function getCuisineKeys(){
-  var cuisineGroup = d3.group(d3.filter(restData, x => selectedZip.includes(x.ZIPCODE)), d => d['CUISINE DESCRIPTION'])
-  return cuisineGroup.keys()
+function getCuisineKeys(selectedData){
+  var cuisineNames = new Set(selectedData.map(d=>d[0]))
+  return Array.from (cuisineNames).slice(0,20)
 }
 
 function showCuisine(zip) {
   selectedZip.push(zip)
   var markerList = [];
-  var cuisineKeys = getCuisineKeys()
   selectedData = updateSelectedData()
+  var cuisineKeys = getCuisineKeys(selectedData)
+  selectedData = d3.filter(selectedData, d => cuisineKeys.includes(d[0]))
   var maxSum = d3.max(selectedData, d => d[2])
   var yScaleCBar = d3.scaleBand()
     .domain(cuisineKeys)
@@ -313,13 +316,15 @@ function showCuisine(zip) {
                     .call(yAxisgenCBar)
                     .style("text-anchor","start")
                     .style('stroke','white')
-                    .style('stroke-width','2')
+                    .style('stroke-width','3')
                     .style('paint-order','stroke')
                     .style("transform", `translateX(3px)`)
+                    .style("stroke-linecap", 'butt')
+                    .style('stroke-linejoin', 'miter')
   yAxisCBar.selectAll('path').style('display','none')
   filteredData = restData.filter(d=> selectedZip.includes(d.ZIPCODE))
   filteredData.forEach(function (d) {
-  inspectData = gradeData.filter(function (e){return (d.Latitude==e.Latitude)&&(d.DBA==e.DBA)})
+  inspectData = gradeData.filter(function (e){return d.CAMIS==e.CAMIS})
   // var inspectionResult = ""
   // inspectData.forEach(function (e){
   //   inspectionResult+=e.INSPECTION_DATE + ': ' + e.GRADE +'<br />';
