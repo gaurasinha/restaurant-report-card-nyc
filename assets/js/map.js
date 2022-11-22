@@ -166,7 +166,7 @@ function zoomToFeature(e) {
                     .padding(0.5)
 
      var fillColor = d3.scaleOrdinal()
-              .domain(["C","B","A"])
+              .domain(["A","B","C"])
               .range(groupColors)
 
      var dots = svg.append("g")
@@ -350,8 +350,8 @@ function showCuisine(zip) {
                     .padding(0.5)
 
      var fillColor = d3.scaleOrdinal()
-              .domain(["C","B","A"])
-              .range(["red","yellow","green"])
+              .domain(["A","B","C"])
+              .range(groupColors)
 
      var dots = svg.append("g")
                       .selectAll("circle")
