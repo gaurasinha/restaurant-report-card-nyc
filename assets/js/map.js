@@ -33,7 +33,7 @@ legendBR.onAdd = function (map) {
 
   var div = L.DomUtil.create('div', 'info legend');
   div.innerHTML +=
-          '<h4\>Area Average Food Safety</h4\>Unsafe <svg width="70" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg"\><defs\><linearGradient id="Gradient1"\><stop offset="0%" stop-color="rgb(165, 0, 38)"  stop-opacity="0.7"/\><stop offset="50%" stop-color="rgb(249, 247, 174)"  stop-opacity="0.7"/\><stop offset="100%" stop-color="rgb(0, 104, 55)"  stop-opacity="0.7"/\></linearGradient\></defs\><rect x="0" y="0" width="70" height="20" stroke="black" fill="url(#Gradient1)" /\></svg\> Safe';
+          '<h4\>Area Average Food Safety</h4\>Unsafe <svg width="70" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg"\><defs\><linearGradient id="Gradient1"\><stop offset="0%" stop-color='+groupColors[2]+'  stop-opacity="0.75"/\><stop offset="50%" stop-color='+groupColors[1]+'  stop-opacity="0.75"/\><stop offset="100%" stop-color='+groupColors[0]+'  stop-opacity="0.75"/\></linearGradient\></defs\><rect x="0" y="0" width="70" height="20" stroke="black" fill="url(#Gradient1)" /\></svg\> Safe';
   return div;
 };
 
@@ -49,11 +49,13 @@ var markerLayer;
 
 var genCuisine = d3.select("#cuisines")
 
-var scaleColor = d3.scaleSequential(d3.interpolateRdYlGn)
-  .domain(d3.extent(zipdata.features, d => d.properties.AvgScore > 0 ? -d.properties.AvgScore : -2))
+var scaleColor = d3.scaleLinear()
+  .domain([0,21,42])
+  .range(groupColors)
 function zipColor(d) {
-  if (d > 0)
-    return scaleColor(-d)
+  if (d > 0){
+    return scaleColor(Math.min(42,d))
+  }
   else
     return '#666'
 }
@@ -89,7 +91,7 @@ function style(feature) {
     opacity: 1,
     color: 'white',
     dashArray: '3',
-    fillOpacity: 0.7
+    fillOpacity: 0.75
   };
 }
 
@@ -260,7 +262,7 @@ function updateCuisine(){
       .attr("width", d => xScaleCBar(d[2]))
   var yAxisgenCBar = d3.axisLeft(yScaleCBar)
                        .tickSize(0);
-  yAxisCBar.merge(yAxisCBar).transition().call(yAxisgenCBar).style("transform", `translateX(3px)`)
+  yAxisCBar.merge(yAxisCBar).transition().duration(700).call(yAxisgenCBar)
 
 }
 
