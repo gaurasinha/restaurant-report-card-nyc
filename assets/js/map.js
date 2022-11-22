@@ -12,6 +12,7 @@ var markerIcon = ['marker-icon-green.png', 'marker-icon-yellow.png', 'marker-ico
 var selectedData;
 var selectedZip = [];
 var selectedCuisineGrade = [];
+var yAxisCBar;
 
 var cuisineDimensions = {
   width: 400,
@@ -20,7 +21,7 @@ var cuisineDimensions = {
     top: 0,
     bottom: 0,
     right: 0,
-    left: 10
+    left: 30
   }
 }
 
@@ -67,10 +68,10 @@ d3.csv('assets/data/restrauntAvg.csv').then(function (data) {
   d3.csv('assets/data/Restaurant_Grades_converted.csv').then(function(dataGrade){
 
     gradeData = dataGrade
-    setTimeout(showCuisine('11385'), 1000);
+    setTimeout(showCuisine('11378'), 1000);
     map.flyToBounds([
-      [40.714007978569455, -73.83696277938968],
-      [40.682367054019416, -73.9240401141906]
+      [40.73551917894102, -73.88564075991255],
+      [40.71269707125203, -73.93131508939085]
   ]);
   })
 });
@@ -166,7 +167,7 @@ function zoomToFeature(e) {
 
      var fillColor = d3.scaleOrdinal()
               .domain(["C","B","A"])
-              .range(["red","yellow","green"])
+              .range(groupColors)
 
      var dots = svg.append("g")
                       .selectAll("circle")
@@ -236,11 +237,11 @@ function updateCuisine(){
   cuisinebars.exit().remove();
   var cuisineKeys = getCuisineKeys()
   var maxSum = d3.max(selectedData, d => d[2])
-  var yScale = d3.scaleBand()
+  var yScaleCBar = d3.scaleBand()
     .domain(cuisineKeys)
     .range([cuisineDimensions.margin.top, cuisineDimensions.height - cuisineDimensions.margin.bottom])
     .padding([0.2])
-  var xScale = d3.scaleLinear()
+  var xScaleCBar = d3.scaleLinear()
     .domain([0, maxSum])
     .range([cuisineDimensions.margin.left, cuisineDimensions.width - cuisineDimensions.margin.right])
 
@@ -248,11 +249,14 @@ function updateCuisine(){
       .append("rect")
       .merge(cuisinebars).transition()
       .duration(700)
-      .attr("y", d => yScale(d[0]))
-      .attr('x', xScale(0))
+      .attr("y", d => yScaleCBar(d[0]))
+      .attr('x', xScaleCBar(0))
       .attr("fill", (d,i) => groupColors[d[1]])
-      .attr("height", d => yScale.bandwidth())
-      .attr("width", d => xScale(d[2]))
+      .attr("height", d => yScaleCBar.bandwidth())
+      .attr("width", d => xScaleCBar(d[2]))
+  var yAxisgenCBar = d3.axisLeft(yScaleCBar)
+                       .tickSize(0);
+  yAxisCBar.merge(yAxisCBar).transition().call(yAxisgenCBar).style("transform", `translateX(3px)`)
 
 }
 
@@ -283,22 +287,33 @@ function showCuisine(zip) {
   var cuisineKeys = getCuisineKeys()
   selectedData = updateSelectedData()
   var maxSum = d3.max(selectedData, d => d[2])
-  var yScale = d3.scaleBand()
+  var yScaleCBar = d3.scaleBand()
     .domain(cuisineKeys)
     .range([cuisineDimensions.margin.top, cuisineDimensions.height - cuisineDimensions.margin.bottom])
     .padding([0.2])
-  var xScale = d3.scaleLinear()
+  var xScaleCBar = d3.scaleLinear()
     .domain([0, maxSum])
     .range([cuisineDimensions.margin.left, cuisineDimensions.width - cuisineDimensions.margin.right])
+  var yAxisgenCBar = d3.axisLeft()
+                       .scale(yScaleCBar)
+                       .tickSize(0)
   svgcuisine.append("g").selectAll("rect")
                         .data(selectedData)
                         .enter()
                         .append("rect")
-                        .attr("y", d => yScale(d[0]))
-                        .attr('x', xScale(0))
+                        .attr("y", d => yScaleCBar(d[0]))
+                        .attr('x', xScaleCBar(0))
                         .attr("fill", (d,i) => groupColors[d[1]])
-                        .attr("height", d => yScale.bandwidth())
-                        .attr("width", d => xScale(d[2]))
+                        .attr("height", d => yScaleCBar.bandwidth())
+                        .attr("width", d => xScaleCBar(d[2]))
+  yAxisCBar = svgcuisine.append("g")
+                    .call(yAxisgenCBar)
+                    .style("text-anchor","start")
+                    .style('stroke','white')
+                    .style('stroke-width','2')
+                    .style('paint-order','stroke')
+                    .style("transform", `translateX(3px)`)
+  yAxisCBar.selectAll('path').style('display','none')
   filteredData = restData.filter(d=> selectedZip.includes(d.ZIPCODE))
   filteredData.forEach(function (d) {
   inspectData = gradeData.filter(function (e){return (d.Latitude==e.Latitude)&&(d.DBA==e.DBA)})
