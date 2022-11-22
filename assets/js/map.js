@@ -8,11 +8,14 @@ var legendBR = L.control({position: 'bottomright'});
 L.Icon.Default.imagePath = 'images/'
 
 var groupColors = ['#7BB661', '#FEF65C', '#FF5348' ]
-var markerIcon = ['marker-icon-green.png', 'marker-icon-yellow.png', 'marker-icon-red.png']
 var selectedData;
 var selectedZip = [];
 var selectedCuisineGrade = [];
 var yAxisCBar;
+
+var markerIcon = [new L.Icon.Default({iconUrl:'marker-icon-green.png',shadowUrl:'marker-shadow.png',iconRetinaUrl:'marker-icon-green-2x.png'}),
+new L.Icon.Default({iconUrl:'marker-icon-yellow.png',shadowUrl:'marker-shadow.png',iconRetinaUrl:'marker-icon-yellow-2x.png'}),
+new L.Icon.Default({iconUrl:'marker-icon-red.png',shadowUrl:'marker-shadow.png',iconRetinaUrl:'marker-icon-red-2x.png'})]
 
 var cuisineDimensions = {
   width: 400,
@@ -208,7 +211,7 @@ function zoomToFeature(e) {
 
     var marker =L.marker([d.Latitude,d.Longitude], {
       opacity: 1,
-      icon: new L.Icon.Default({iconUrl:markerIcon[Math.min(2, parseInt(d.AvgScore / 14))],shadowUrl:'marker-shadow.png'})
+      icon: markerIcon[Math.min(2, parseInt(d.AvgScore / 14))]
     }).bindPopup(popup)
     markerList.push(marker)
   }
@@ -391,7 +394,7 @@ function showCuisine(zip) {
   var popup = L.popup().setContent(div);
   marker =L.marker([d.Latitude,d.Longitude], {
     opacity: 1,
-    icon: new L.Icon.Default({iconUrl:markerIcon[Math.min(2, parseInt(d.AvgScore / 14))],shadowUrl:'marker-shadow.png'})
+    icon: markerIcon[Math.min(2, parseInt(d.AvgScore / 14))]
   }).bindPopup(popup)
   markerList.push(marker)
 })
