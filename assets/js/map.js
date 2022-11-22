@@ -5,7 +5,7 @@ var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(map);
 var legendBR = L.control({position: 'bottomright'});
-L.Icon.Default.imagePath = '/images/'
+L.Icon.Default.imagePath = 'images/'
 
 var groupColors = ['#7BB661', '#FEF65C', '#FF5348' ]
 var markerIcon = ['marker-icon-green.png', 'marker-icon-yellow.png', 'marker-icon-red.png']
