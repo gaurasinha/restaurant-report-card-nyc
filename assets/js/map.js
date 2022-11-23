@@ -144,7 +144,7 @@ function zoomToFeature(e) {
     // }
     // )
 
-  var div = $('<div id="'+  d.CAMIS +'" style="width: 200px; height:170px;"><span style="font-weight: bold;color:darkorange">Food Grades: 2021-22</span><br><span style="font-weight: bold;color: black;">'+d.DBA+'</span><svg id="chart"></svg></div>')[0];
+  var div = $('<div id="'+  d.CAMIS +'" style="width: 200px; height:170px;"><span style="font-weight: bold;color: black;">'+d.DBA+'</span><br>'+d['CUISINE DESCRIPTION']+' Tel:'+d.PHONE+'<br>'+d.BUILDING+' '+d.STREET+'<svg id="chart"></svg></div>')[0];
 
 
   var xAccessor = d => d.INSPECTION_DATE
@@ -333,7 +333,7 @@ function showCuisine(zip) {
   // })
   // var div = $('<div id="'+  d.CAMIS +'" style="width: 200px; height:200px;"><p style="font-weight: bold;color:darkorange">Food Grades: 2021-22</p><p style="font-weight: bold;">'+d.DBA+'</p><p>'+inspectionResult+'</p><svg id="chart"></svg></div>')[0];
   
-  var div = $('<div id="'+  d.CAMIS +'" style="width: 200px; height:170px;"><span style="font-weight: bold;color:darkorange">Food Grades: 2021-22</span><br><span style="font-weight: bold;color: black;">'+d.DBA+'</span><svg id="chart"></svg></div>')[0];
+  var div = $('<div id="'+  d.CAMIS +'" style="width: 200px; height:170px;"><span style="font-weight: bold;color: black;">'+d.DBA+'</span><br>'+d['CUISINE DESCRIPTION']+' Tel:'+d.PHONE+'<br>'+d.BUILDING+' '+d.STREET+'<svg id="chart"></svg></div>')[0];
 
 
   var xAccessor = d => d.INSPECTION_DATE
