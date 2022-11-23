@@ -33,7 +33,7 @@ legendBR.onAdd = function (map) {
 
   var div = L.DomUtil.create('div', 'info legend');
   div.innerHTML +=
-          '<h4\>Area Average Food Safety</h4\>Unsafe <svg width="70" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg"\><defs\><linearGradient id="Gradient1"\><stop offset="0%" stop-color="rgb(165, 0, 38)"  stop-opacity="0.7"/\><stop offset="50%" stop-color="rgb(249, 247, 174)"  stop-opacity="0.7"/\><stop offset="100%" stop-color="rgb(0, 104, 55)"  stop-opacity="0.7"/\></linearGradient\></defs\><rect x="0" y="0" width="70" height="20" stroke="black" fill="url(#Gradient1)" /\></svg\> Safe';
+          '<h4\>Area Average Food Safety</h4\>Unsafe <svg width="70" height="20" version="1.1" xmlns="http://www.w3.org/2000/svg"\><defs\><linearGradient id="Gradient1"\><stop offset="0%" stop-color='+groupColors[2]+'  stop-opacity="0.75"/\><stop offset="50%" stop-color='+groupColors[1]+'  stop-opacity="0.75"/\><stop offset="100%" stop-color='+groupColors[0]+'  stop-opacity="0.75"/\></linearGradient\></defs\><rect x="0" y="0" width="70" height="20" stroke="black" fill="url(#Gradient1)" /\></svg\> Safe';
   return div;
 };
 
@@ -47,13 +47,15 @@ var bars;
 var svgGroups;
 var markerLayer;
 
- 
+var genCuisine = d3.select("#cuisines")
 
-var scaleColor = d3.scaleSequential(d3.interpolateRdYlGn)
-  .domain(d3.extent(zipdata.features, d => d.properties.AvgScore > 0 ? -d.properties.AvgScore : -2))
+var scaleColor = d3.scaleLinear()
+  .domain([0,21,42])
+  .range(groupColors)
 function zipColor(d) {
-  if (d > 0)
-    return scaleColor(-d)
+  if (d > 0){
+    return scaleColor(Math.min(42,d))
+  }
   else
     return '#666'
 }
@@ -72,7 +74,7 @@ d3.csv('assets/data/restrauntAvg.csv').then(function (data) {
   d3.csv('assets/data/ViolationData.csv').then(function(Vdata){
     ViolationCodeData = Vdata
       })
-  d3.csv('assets/data/Restaurant_Grades_converted.csv').then(function(dataGrade){
+  d3.csv('assets/data/Inspection_Full.csv').then(function(dataGrade){
     gradeData = dataGrade
     
     setTimeout(showCuisine('11378'), 10000);
@@ -95,7 +97,7 @@ function style(feature) {
     opacity: 1,
     color: 'white',
     dashArray: '3',
-    fillOpacity: 0.7
+    fillOpacity: 0.75
   };
 }
 
@@ -141,14 +143,14 @@ function zoomToFeature(e) {
   //filter data falling with clicked zipcode
   filteredData = restData.filter(d=> selectedZip.includes(d.ZIPCODE))
   filteredData.forEach(function (d) {
-    inspectData = gradeData.filter(function (e){return (d.Latitude==e.Latitude)&&(d.DBA==e.DBA)})
+    inspectData = gradeData.filter(e => d.CAMIS==e.CAMIS)
     // var inspectionResult = ""
     // inspectData.forEach(function (e){
     //   inspectionResult+=e.INSPECTION_DATE + ': ' + e.GRADE +'<br />';
     // }
     // )
 
-  var div = $('<div id="'+  d.CAMIS +'" style="width: 200px; height:170px;"><span style="font-weight: bold;color:darkorange">Food Grades: 2021-22</span><br><span style="font-weight: bold;color: black;">'+d.DBA+'</span><svg id="chart"></svg></div>')[0];
+  var div = $('<div id="'+  d.CAMIS +'" style="width: 200px; height:170px;"><span style="font-weight: bold;color: black;">'+d.DBA+'</span><br>'+d['CUISINE DESCRIPTION']+' Tel:'+d.PHONE+'<br>'+d.BUILDING+' '+d.STREET+'<svg id="chart"></svg></div>')[0];
 
 
   var xAccessor = d => d.INSPECTION_DATE
@@ -242,9 +244,10 @@ function onEachFeature(feature, layer) {
 
 function updateCuisine(){
   selectedData = updateSelectedData();
-  var cuisinebars = svgcuisine.select('g').selectAll('rect').data(selectedData)
+  var cuisineKeys = getCuisineKeys(selectedData)
+  topData = d3.filter(selectedData, d => cuisineKeys.includes(d[0]))
+  var cuisinebars = svgcuisine.select('g').selectAll('rect').data(topData)
   cuisinebars.exit().remove();
-  var cuisineKeys = getCuisineKeys()
   var maxSum = d3.max(selectedData, d => d[2])
   var yScaleCBar = d3.scaleBand()
     .domain(cuisineKeys)
@@ -265,7 +268,7 @@ function updateCuisine(){
       .attr("width", d => xScaleCBar(d[2]))
   var yAxisgenCBar = d3.axisLeft(yScaleCBar)
                        .tickSize(0);
-  yAxisCBar.merge(yAxisCBar).transition().call(yAxisgenCBar).style("transform", `translateX(3px)`)
+  yAxisCBar.merge(yAxisCBar).transition().duration(700).call(yAxisgenCBar)
 
 }
 
@@ -282,19 +285,21 @@ function updateSelectedData(){
         arrayData.push([key,j,sum])}
     }
   })
-  return arrayData.reverse()
+  arrayData.sort((a, b) => b[2] - a[2])
+  return arrayData
 }
 
-function getCuisineKeys(){
-  var cuisineGroup = d3.group(d3.filter(restData, x => selectedZip.includes(x.ZIPCODE)), d => d['CUISINE DESCRIPTION'])
-  return cuisineGroup.keys()
+function getCuisineKeys(selectedData){
+  var cuisineNames = new Set(selectedData.map(d=>d[0]))
+  return Array.from (cuisineNames).slice(0,20)
 }
 
 function showCuisine(zip) {
   selectedZip.push(zip)
   var markerList = [];
-  var cuisineKeys = getCuisineKeys()
   selectedData = updateSelectedData()
+  var cuisineKeys = getCuisineKeys(selectedData)
+  selectedData = d3.filter(selectedData, d => cuisineKeys.includes(d[0]))
   var maxSum = d3.max(selectedData, d => d[2])
   var yScaleCBar = d3.scaleBand()
     .domain(cuisineKeys)
@@ -319,20 +324,22 @@ function showCuisine(zip) {
                     .call(yAxisgenCBar)
                     .style("text-anchor","start")
                     .style('stroke','white')
-                    .style('stroke-width','2')
+                    .style('stroke-width','3')
                     .style('paint-order','stroke')
                     .style("transform", `translateX(3px)`)
+                    .style("stroke-linecap", 'butt')
+                    .style('stroke-linejoin', 'miter')
   yAxisCBar.selectAll('path').style('display','none')
   filteredData = restData.filter(d=> selectedZip.includes(d.ZIPCODE))
   filteredData.forEach(function (d) {
-  inspectData = gradeData.filter(function (e){return (d.Latitude==e.Latitude)&&(d.DBA==e.DBA)})
+  inspectData = gradeData.filter(e => d.CAMIS==e.CAMIS)
   // var inspectionResult = ""
   // inspectData.forEach(function (e){
   //   inspectionResult+=e.INSPECTION_DATE + ': ' + e.GRADE +'<br />';
   // })
   // var div = $('<div id="'+  d.CAMIS +'" style="width: 200px; height:200px;"><p style="font-weight: bold;color:darkorange">Food Grades: 2021-22</p><p style="font-weight: bold;">'+d.DBA+'</p><p>'+inspectionResult+'</p><svg id="chart"></svg></div>')[0];
   
-  var div = $('<div id="'+  d.CAMIS +'" style="width: 200px; height:170px;"><span style="font-weight: bold;color:darkorange">Food Grades: 2021-22</span><br><span style="font-weight: bold;color: black;">'+d.DBA+'</span><svg id="chart"></svg></div>')[0];
+  var div = $('<div id="'+  d.CAMIS +'" style="width: 200px; height:170px;"><span style="font-weight: bold;color: black;">'+d.DBA+'</span><br>'+d['CUISINE DESCRIPTION']+' Tel:'+d.PHONE+'<br>'+d.BUILDING+' '+d.STREET+'<svg id="chart"></svg></div>')[0];
 
 
   var xAccessor = d => d.INSPECTION_DATE
