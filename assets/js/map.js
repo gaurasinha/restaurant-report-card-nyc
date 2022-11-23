@@ -70,7 +70,7 @@ d3.csv('assets/data/restrauntAvg.csv').then(function (data) {
     style: style,
     onEachFeature: onEachFeature
   }).addTo(map);
-  d3.csv('assets/data/Restaurant_Grades_converted.csv').then(function(dataGrade){
+  d3.csv('assets/data/Inspection_Full.csv').then(function(dataGrade){
 
     gradeData = dataGrade
     setTimeout(showCuisine('11378'), 1000);
@@ -137,7 +137,7 @@ function zoomToFeature(e) {
   //filter data falling with clicked zipcode
   filteredData = restData.filter(d=> selectedZip.includes(d.ZIPCODE))
   filteredData.forEach(function (d) {
-    inspectData = gradeData.filter(function (e){return (d.Latitude==e.Latitude)&&(d.DBA==e.DBA)})
+    inspectData = gradeData.filter(e => d.CAMIS==e.CAMIS)
     // var inspectionResult = ""
     // inspectData.forEach(function (e){
     //   inspectionResult+=e.INSPECTION_DATE + ': ' + e.GRADE +'<br />';
@@ -326,7 +326,7 @@ function showCuisine(zip) {
   yAxisCBar.selectAll('path').style('display','none')
   filteredData = restData.filter(d=> selectedZip.includes(d.ZIPCODE))
   filteredData.forEach(function (d) {
-  inspectData = gradeData.filter(function (e){return d.CAMIS==e.CAMIS})
+  inspectData = gradeData.filter(e => d.CAMIS==e.CAMIS)
   // var inspectionResult = ""
   // inspectData.forEach(function (e){
   //   inspectionResult+=e.INSPECTION_DATE + ': ' + e.GRADE +'<br />';
