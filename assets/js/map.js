@@ -77,7 +77,7 @@ d3.csv('assets/data/restrauntAvg.csv').then(function (data) {
   d3.csv('assets/data/Inspection_Full.csv').then(function(dataGrade){
     gradeData = dataGrade
     
-    setTimeout(showCuisine('11378'), 100000);
+    setTimeout(showCuisine('11378'), 10000);
     map.flyToBounds([
       [40.73551917894102, -73.88564075991255],
       [40.71269707125203, -73.93131508939085]
