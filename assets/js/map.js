@@ -498,7 +498,6 @@ function violationsInSelectedArea() {
     .attr("width", x.bandwidth())
     .attr("height", function (d) { return height - y(d[1]); })
     .attr("fill", "#69b3a2")
-    .padding(0.5)
 
   // const margin = 80;
   // const width = 1000 - 2 * margin;
