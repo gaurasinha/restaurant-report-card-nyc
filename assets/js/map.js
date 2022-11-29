@@ -227,11 +227,12 @@ function zoomToFeature(e) {
   markerLayer.clearLayers();
   markerLayer = L.layerGroup(markerList).addTo(map);
   violationsInSelectedArea();
-  if (d.DBA) {
+  // not sure what does these lines do but it is giving error so I'll comment them for now
+  // if (d.DBA) {
 
-    var svg = d3.select(div).select("svg").attr("width", 200).attr("height", 200);
-    svg.append("rect").attr("width", 150).attr("height", 150).style("fill", "lightBlue");
-  }
+  //   var svg = d3.select(div).select("svg").attr("width", 200).attr("height", 200);
+  //   svg.append("rect").attr("width", 150).attr("height", 150).style("fill", "lightBlue");
+  // }
 
 }
 
@@ -249,6 +250,8 @@ function updateCuisine() {
   topData = d3.filter(selectedData, d => cuisineKeys.includes(d[0]))
   var cuisinebars = svgcuisine.select('g').selectAll('rect').data(topData)
   cuisinebars.exit().remove();
+  var cuisineCountLabels = svgcuisine.select('#countLabel').selectAll('text').data(topData.filter(d=>d[1]==2))
+  cuisineCountLabels.exit().remove();
   var maxSum = d3.max(selectedData, d => d[2])
   var yScaleCBar = d3.scaleBand()
     .domain(cuisineKeys)
@@ -263,10 +266,24 @@ function updateCuisine() {
     .merge(cuisinebars).transition()
     .duration(700)
     .attr("y", d => yScaleCBar(d[0]))
-    .attr('x', cuisineDimensions.margin.left)
+    .attr('x', d => xScaleCBar(d[2]))
     .attr("fill", d => groupColors[d[1]])
     .attr("height", yScaleCBar.bandwidth())
-    .attr("width", d => xScaleCBar(d[2]))
+    .attr("width", d => xScaleCBar(d[3]-d[2]))
+  cuisineCountLabels.enter().append("text")
+  .merge(cuisineCountLabels).transition()
+  .duration(700)
+    .text(d=>d[3])
+    .attr('y', d => yScaleCBar(d[0])+yScaleCBar.bandwidth())
+    .attr('x', d => Math.max(75,xScaleCBar(d[3])))
+    .attr('font-size', 'small')
+    .style('stroke', 'white')
+    .style('stroke-width', '3')
+    .style('paint-order', 'stroke')
+    .style("stroke-linecap", 'butt')
+    .style('stroke-linejoin', 'miter')
+    .style("text-anchor", "end")
+    .style("transform", `translate(-3px, -5px)`)
   var yAxisgenCBar = d3.axisLeft(yScaleCBar)
     .tickSize(0);
   yAxisCBar.merge(yAxisCBar).transition().duration(700).call(yAxisgenCBar)
@@ -282,12 +299,15 @@ function updateSelectedData() {
     sum = 0;
     for (j = 0; j < 3; j++) {
       if (value.get(j) != undefined) {
+        arrayData.push([key, j, sum, sum + value.get(j)])
         sum += value.get(j)
-        arrayData.push([key, j, sum])
+      }
+      else {
+        arrayData.push([key, j, sum, sum])
       }
     }
   })
-  arrayData.sort((a, b) => b[2] - a[2])
+  arrayData.sort((a, b) => b[3] - a[3])
   return arrayData
 }
 
@@ -318,10 +338,26 @@ function showCuisine(zip) {
     .enter()
     .append("rect")
     .attr("y", d => yScaleCBar(d[0]))
-    .attr('x', cuisineDimensions.margin.left)
-    .attr("fill", (d, i) => groupColors[d[1]])
-    .attr("height", d => yScaleCBar.bandwidth())
-    .attr("width", d => xScaleCBar(d[2]))
+    .attr('x', d => xScaleCBar(d[2]))
+    .attr("fill", d => groupColors[d[1]])
+    .attr("height", yScaleCBar.bandwidth())
+    .attr("width", d => xScaleCBar(d[3] - d[2]))
+  svgcuisine.append("g")
+    .attr('id', 'countLabel')
+    .selectAll("text")
+    .data(selectedData.filter(d=>d[1]==2))
+    .enter().append("text")
+    .text(d=>d[3])
+    .attr('y', d => yScaleCBar(d[0])+yScaleCBar.bandwidth())
+    .attr('x', d => Math.max(75,xScaleCBar(d[3])))
+    .attr('font-size', 'small')
+    .style('stroke', 'white')
+    .style('stroke-width', '3')
+    .style('paint-order', 'stroke')
+    .style("stroke-linecap", 'butt')
+    .style('stroke-linejoin', 'miter')
+    .style("text-anchor", "end")
+    .style("transform", `translate(-3px, -5px)`)
   yAxisCBar = svgcuisine.append("g")
     .call(yAxisgenCBar)
     .style("text-anchor", "start")
