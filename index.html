@@ -5,128 +5,134 @@
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 -->
 <html>
-	<head>
-		<title>Restaurant Report Card - NYC</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="assets/css/main.css" />
-		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
-	</head>
-	<body class="is-preload">
 
-		<!-- Wrapper -->
-			<div id="wrapper">
+<head>
+	<title>Restaurant Report Card - NYC</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<link rel="stylesheet" href="assets/css/main.css" />
+	<noscript>
+		<link rel="stylesheet" href="assets/css/noscript.css" />
+	</noscript>
+</head>
 
-				<!-- Header -->
-					<header id="header" class="alt">
-						<span class="logo"><img src="images/logo.png" alt="" width="100px"/></span>
-						<h1>Restaurant Report Card - NYC</h1>
-						<p>Visualizations of restaurant inspections in New York City.</p>
-					</header>
+<body class="is-preload">
 
-				<!-- Nav -->
-					<nav id="nav">
-						<ul>
-							<li><a href="#intro" class="active">Food Safety Map</a></li>
-							<li><a href="#first">Popular Cuisines</a></li>
-							<li><a href="#second">Big Brands</a></li>
-							<li><a href="#cta">Common Violations</a></li>
-						</ul>
-					</nav>
+	<!-- Wrapper -->
+	<div id="wrapper">
 
-				<!-- Main -->
-					<div id="main">
+		<!-- Header -->
+		<header id="header" class="alt">
+			<span class="logo"><img src="images/logo.png" alt="" width="100px" /></span>
+			<h1>Restaurant Report Card - NYC</h1>
+			<p>Visualizations of restaurant inspections in New York City.</p>
+		</header>
 
-						<!-- Introduction -->
-							<section id="intro" class="main special">
-								<header class="major">
-									<h2>NYC restaurant safety map
-									</h2>
-								</header>
-								<div style="display: flex;flex-direction: row;height:640px;width:100%">
-								<div id="map" style="flex: 2"></div>
-								<div id="map" style="flex: 1">
-									<h4>Top 20 Cuisines in Selected Areas</h4>
-									<svg id="cuisinesArea"></svg>
-								</div>
-								</div>
-							</section>
+		<!-- Nav -->
+		<nav id="nav">
+			<ul>
+				<li><a href="#intro" class="active">Food Safety Map</a></li>
+				<li><a href="#first">Popular Cuisines</a></li>
+				<li><a href="#second">Big Brands</a></li>
+				<li><a href="#cta">Common Violations</a></li>
+			</ul>
+		</nav>
 
-						<!-- First Section -->
-							<section id="first" class="main special">
-								<header class="major">
-								
-								</header>
-								<body style="font-family: 'Open Sans', sans-serif;">
-									<div style="text-align: center;">
-									  <!-- <h2>Bar chart example</h2> -->
-									  <div style="width: 1000px;
-									  height: 600px;
-									  margin: auto;
-									  ">
-										<svg style="width: 100%;
-										height: 100%;" id="violation"></svg>
-									  </div>
-									</div>
-								  
-								  </body>
-								
-								
-								
-							</section>
+		<!-- Main -->
+		<div id="main">
 
-						<!-- Second Section -->
-							<section id="second" class="main special">
-								<header class="major">
-									<h2>Average score of popular bands
-									</h2>
-								</header>
-								<div id="brands"></div>
-							</section>
+			<!-- Introduction -->
+			<section id="intro" class="main special">
+				<header class="major">
+					<h2>NYC restaurant safety map
+					</h2>
+				</header>
+				<div style="display: flex;flex-direction: row;height:640px;width:100%">
+					<div id="map" style="flex: 3"></div>
+					<div style="flex: 2">
+						<h4>Top 20 Cuisines in Selected Areas</h4>
+						<svg id="cuisinesArea"></svg>
+					</div>
+					<div style="flex: 2">
+						<svg style="width: 100%;
+					  height: 100%;" id="violation"></svg>
+					</div>
+				</div>
+			</section>
 
-						<!-- Get Started -->
-							<section id="cta" class="main special">
-								<header class="major">
-									<h2>Common violation types in different months
-									</h2>
-								</header>
-								<div id="Violations"></div>
-							</section>
+			<!-- First Section -->
+			<section id="first" class="main special">
+				<header class="major">
+
+				</header>
+
+				<body style="font-family: 'Open Sans', sans-serif;">
+					<div style="text-align: center;">
+						<!-- <h2>Bar chart example</h2> -->
 
 					</div>
 
-				<!-- Footer -->
-					<footer id="footer">
-						<section>
-							<h2>Members</h2>
-							<dl class="alt">
-								<dt>Yifan Kang</dt>
-								<dd><a href="mailto:yifank@clemson.edu">yifank@clemson.edu</a></dd>
-								<dt>Archana Saroj</dt>
-								<dd><a href="mailto:asaroj@g.clemson.edu">asaroj@g.clemson.edu</a></dd>
-								<dt>Gaura Sinha</dt>
-								<dd><a href="mailto:gsinha@clemson.edu">gsinha@clemson.edu</a></dd>
-							</dl>
-						</section>
-						<p class="copyright">&copy; Group 10. Design: <a href="https://html5up.net">HTML5 UP</a>.</p>
-					</footer>
+				</body>
 
-			</div>
 
-		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/jquery.scrollex.min.js"></script>
-			<script src="assets/js/jquery.scrolly.min.js"></script>
-			<script src="assets/js/browser.min.js"></script>
-			<script src="assets/js/breakpoints.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<script src="assets/js/main.js"></script>
-			<script src="https://d3js.org/d3.v7.min.js"></script>
-			<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.2/dist/leaflet.css" integrity="sha256-sA+zWATbFveLLNqWO2gtiw3HL/lh1giY/Inf1BJ0z14=" crossorigin="" />
-			<script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js" integrity="sha256-o9N1jGDZrf5tS+Ft4gbIK7mYMipq9lqpVJ91xHSyKhg=" crossorigin=""></script>
-			<script type="text/javascript" src="assets/js/zipdata.js"></script>
-			<script src="assets/js/map.js"></script>
-			<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-  			<script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
-	</body>
+
+			</section>
+
+			<!-- Second Section -->
+			<section id="second" class="main special">
+				<header class="major">
+					<h2>Average score of popular bands
+					</h2>
+				</header>
+				<div id="brands"></div>
+			</section>
+
+			<!-- Get Started -->
+			<section id="cta" class="main special">
+				<header class="major">
+					<h2>Common violation types in different months
+					</h2>
+				</header>
+				<div id="Violations"></div>
+			</section>
+
+		</div>
+
+		<!-- Footer -->
+		<footer id="footer">
+			<section>
+				<h2>Members</h2>
+				<dl class="alt">
+					<dt>Yifan Kang</dt>
+					<dd><a href="mailto:yifank@clemson.edu">yifank@clemson.edu</a></dd>
+					<dt>Archana Saroj</dt>
+					<dd><a href="mailto:asaroj@g.clemson.edu">asaroj@g.clemson.edu</a></dd>
+					<dt>Gaura Sinha</dt>
+					<dd><a href="mailto:gsinha@clemson.edu">gsinha@clemson.edu</a></dd>
+				</dl>
+			</section>
+			<p class="copyright">&copy; Group 10. Design: <a href="https://html5up.net">HTML5 UP</a>.</p>
+		</footer>
+
+	</div>
+
+	<!-- Scripts -->
+	<script src="assets/js/jquery.min.js"></script>
+	<script src="assets/js/jquery.scrollex.min.js"></script>
+	<script src="assets/js/jquery.scrolly.min.js"></script>
+	<script src="assets/js/browser.min.js"></script>
+	<script src="assets/js/breakpoints.min.js"></script>
+	<script src="assets/js/util.js"></script>
+	<script src="assets/js/main.js"></script>
+	<script src="https://d3js.org/d3.v7.min.js"></script>
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.2/dist/leaflet.css"
+		integrity="sha256-sA+zWATbFveLLNqWO2gtiw3HL/lh1giY/Inf1BJ0z14=" crossorigin="" />
+	<script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js"
+		integrity="sha256-o9N1jGDZrf5tS+Ft4gbIK7mYMipq9lqpVJ91xHSyKhg=" crossorigin=""></script>
+	<script type="text/javascript" src="assets/js/zipdata.js"></script>
+	<script src="assets/js/map.js"></script>
+	<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
+</body>
+
 </html>
