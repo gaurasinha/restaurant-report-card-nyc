@@ -128,7 +128,7 @@ function calcRange(a, b) {
 };
 
 
-function zoomToFeature(e) {
+function clickFeature(e) {
   var markerList = []
   map.fitBounds(e.target.getBounds());
   if (selectedZip.includes(e.target.feature.properties.ZIPCODE)) {
@@ -143,6 +143,13 @@ function zoomToFeature(e) {
   updateCuisine()
   //filter data falling with clicked zipcode
   filteredData = restData.filter(d => selectedZip.includes(d.ZIPCODE))
+
+  var tmpCuisine = []
+  selectedCuisine.forEach(function(d){
+    if(cuisineKeys.includes(d))
+      tmpCuisine.push(d)
+  })
+  selectedCuisine = tmpCuisine
   circleCuisine()
   filteredData.forEach(function (d) {
     inspectData = gradeData.filter(e => d.CAMIS == e.CAMIS)
@@ -242,7 +249,7 @@ function onEachFeature(feature, layer) {
   layer.on({
     mouseover: highlightFeature,
     mouseout: resetHighlight,
-    click: zoomToFeature
+    click: clickFeature
   });
 }
 
@@ -289,6 +296,7 @@ function updateCuisine() {
       return circleColor(d)
     return "currentColor"
   })
+  yAxisCBar.selectAll('.tick').selectAll('text').on('click', clickCuisineName)
 }
 
 function updateSelectedData() {
@@ -333,6 +341,7 @@ function clickCuisineName(e) {
       return circleColor(d)
     return "currentColor"
   })
+  // .on('click', clickCuisineName)
   circleCuisine()
 }
 
