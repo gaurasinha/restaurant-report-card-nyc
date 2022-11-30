@@ -3811,15 +3811,7 @@ input, select, textarea {
 	font-size: 12px;
 	fill: #fff;
   }
-  
-  path {
-	stroke: gray;
-  }
-  
-  line {
-	stroke: gray;
-  }
-  
+
   line#limit {
 	stroke: #FED966;
 	stroke-width: 3;

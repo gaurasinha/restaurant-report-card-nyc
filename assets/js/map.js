@@ -12,19 +12,22 @@ var selectedData;
 var selectedZip = [];
 var selectedCuisineGrade = [];
 var yAxisCBar;
+var selectedCuisine = [];
+var cuisineKeys;
+var circleColor;
 
 var markerIcon = [new L.Icon.Default({ iconUrl: 'marker-icon-green.png', shadowUrl: 'marker-shadow.png', iconRetinaUrl: 'marker-icon-green-2x.png' }),
 new L.Icon.Default({ iconUrl: 'marker-icon-yellow.png', shadowUrl: 'marker-shadow.png', iconRetinaUrl: 'marker-icon-yellow-2x.png' }),
 new L.Icon.Default({ iconUrl: 'marker-icon-red.png', shadowUrl: 'marker-shadow.png', iconRetinaUrl: 'marker-icon-red-2x.png' })]
 
 var cuisineDimensions = {
-  width: 400,
-  height: 600,
+  width: 600,
+  height: 320,
   margin: {
     top: 0,
     bottom: 0,
     right: 0,
-    left: 30
+    left: 75
   }
 }
 
@@ -46,6 +49,7 @@ var svgcuisine = d3.select("#cuisinesArea")
 var bars;
 var svgGroups;
 var markerLayer;
+var circleLayer;
 
 var genCuisine = d3.select("#cuisines")
 
@@ -246,11 +250,11 @@ function onEachFeature(feature, layer) {
 
 function updateCuisine() {
   selectedData = updateSelectedData();
-  var cuisineKeys = getCuisineKeys(selectedData)
+  cuisineKeys = getCuisineKeys(selectedData)
   topData = d3.filter(selectedData, d => cuisineKeys.includes(d[0]))
   var cuisinebars = svgcuisine.select('g').selectAll('rect').data(topData)
   cuisinebars.exit().remove();
-  var cuisineCountLabels = svgcuisine.select('#countLabel').selectAll('text').data(topData.filter(d=>d[1]==2))
+  var cuisineCountLabels = svgcuisine.select('#countLabel').selectAll('text').data(topData.filter(d => d[1] == 2))
   cuisineCountLabels.exit().remove();
   var maxSum = d3.max(selectedData, d => d[2])
   var yScaleCBar = d3.scaleBand()
@@ -259,7 +263,7 @@ function updateCuisine() {
     .padding([0.2])
   var xScaleCBar = d3.scaleLinear()
     .domain([0, maxSum])
-    .range([0, cuisineDimensions.width - cuisineDimensions.margin.right - cuisineDimensions.margin.left])
+    .range([cuisineDimensions.margin.left, cuisineDimensions.width - cuisineDimensions.margin.right - cuisineDimensions.margin.left])
 
   cuisinebars.enter()
     .append("rect")
@@ -269,21 +273,13 @@ function updateCuisine() {
     .attr('x', d => xScaleCBar(d[2]))
     .attr("fill", d => groupColors[d[1]])
     .attr("height", yScaleCBar.bandwidth())
-    .attr("width", d => xScaleCBar(d[3]-d[2]))
+    .attr("width", d => xScaleCBar(d[3]) - xScaleCBar(d[2]))
   cuisineCountLabels.enter().append("text")
-  .merge(cuisineCountLabels).transition()
-  .duration(700)
-    .text(d=>d[3])
-    .attr('y', d => yScaleCBar(d[0])+yScaleCBar.bandwidth())
-    .attr('x', d => Math.max(75,xScaleCBar(d[3])))
-    .attr('font-size', 'small')
-    .style('stroke', 'white')
-    .style('stroke-width', '3')
-    .style('paint-order', 'stroke')
-    .style("stroke-linecap", 'butt')
-    .style('stroke-linejoin', 'miter')
-    .style("text-anchor", "end")
-    .style("transform", `translate(-3px, -5px)`)
+    .merge(cuisineCountLabels).transition()
+    .duration(700)
+    .text(d => d[3])
+    .attr('y', d => yScaleCBar(d[0]) + yScaleCBar.bandwidth()*.75)
+    .attr('x', d => xScaleCBar(d[3])+3)
   var yAxisgenCBar = d3.axisLeft(yScaleCBar)
     .tickSize(0);
   yAxisCBar.merge(yAxisCBar).transition().duration(700).call(yAxisgenCBar)
@@ -313,14 +309,29 @@ function updateSelectedData() {
 
 function getCuisineKeys(selectedData) {
   var cuisineNames = new Set(selectedData.map(d => d[0]))
-  return Array.from(cuisineNames).slice(0, 20)
+  return Array.from(cuisineNames).slice(0, 10)
+}
+
+function clickCuisineName(cuisineName) {
+  if (selectedCuisine.includes(cuisineName)) {
+    for (var i = 0; i < selectedCuisine.length; i++) {
+      if (selectedCuisine[i] === cuisineName)
+        selectedCuisine.splice(i, 1);
+    }
+  }
+  else {
+    selectedCuisine.push(cuisineName)
+  }
 }
 
 function showCuisine(zip) {
   selectedZip.push(zip)
   var markerList = [];
   selectedData = updateSelectedData()
-  var cuisineKeys = getCuisineKeys(selectedData)
+  cuisineKeys = getCuisineKeys(selectedData)
+  circleColor = d3.scaleOrdinal()
+    .domain(cuisineKeys)
+    .range(d3.schemeCategory10)
   selectedData = d3.filter(selectedData, d => cuisineKeys.includes(d[0]))
   var maxSum = d3.max(selectedData, d => d[2])
   var yScaleCBar = d3.scaleBand()
@@ -329,7 +340,7 @@ function showCuisine(zip) {
     .padding([0.2])
   var xScaleCBar = d3.scaleLinear()
     .domain([0, maxSum])
-    .range([0, cuisineDimensions.width - cuisineDimensions.margin.right - cuisineDimensions.margin.left])
+    .range([cuisineDimensions.margin.left, cuisineDimensions.width - cuisineDimensions.margin.right - cuisineDimensions.margin.left])
   var yAxisgenCBar = d3.axisLeft()
     .scale(yScaleCBar)
     .tickSize(0)
@@ -341,30 +352,21 @@ function showCuisine(zip) {
     .attr('x', d => xScaleCBar(d[2]))
     .attr("fill", d => groupColors[d[1]])
     .attr("height", yScaleCBar.bandwidth())
-    .attr("width", d => xScaleCBar(d[3] - d[2]))
+    .attr("width", d => xScaleCBar(d[3]) - xScaleCBar(d[2]))
   svgcuisine.append("g")
     .attr('id', 'countLabel')
     .selectAll("text")
-    .data(selectedData.filter(d=>d[1]==2))
+    .data(selectedData.filter(d => d[1] == 2))
     .enter().append("text")
-    .text(d=>d[3])
-    .attr('y', d => yScaleCBar(d[0])+yScaleCBar.bandwidth())
-    .attr('x', d => Math.max(75,xScaleCBar(d[3])))
-    .attr('font-size', 'small')
-    .style('stroke', 'white')
-    .style('stroke-width', '3')
-    .style('paint-order', 'stroke')
-    .style("stroke-linecap", 'butt')
-    .style('stroke-linejoin', 'miter')
-    .style("text-anchor", "end")
-    .style("transform", `translate(-3px, -5px)`)
+    .text(d => d[3])
+    .attr('y', d => yScaleCBar(d[0]) + yScaleCBar.bandwidth()*.75)
+    .attr('x', d => xScaleCBar(d[3])+3)
   yAxisCBar = svgcuisine.append("g")
+    .attr("transform", `translate(${cuisineDimensions.margin.left}, 0)`)
     .call(yAxisgenCBar)
-    .style("text-anchor", "start")
     .style('stroke', 'white')
     .style('stroke-width', '3')
     .style('paint-order', 'stroke')
-    .style("transform", `translateX(3px)`)
     .style("stroke-linecap", 'butt')
     .style('stroke-linejoin', 'miter')
   yAxisCBar.selectAll('path').style('display', 'none')
@@ -446,25 +448,43 @@ function showCuisine(zip) {
     marker = L.marker([d.Latitude, d.Longitude], {
       opacity: 1,
       icon: markerIcon[Math.min(2, parseInt(d.AvgScore / 14))]
-
-
-
     }).bindPopup(popup)
     markerList.push(marker)
   })
   markerLayer = L.layerGroup(markerList).addTo(map)
   violationsInSelectedArea();
+  selectedCuisine.push('American')
+  circleCuisine(filteredData.filter(d => selectedCuisine.includes(d['CUISINE DESCRIPTION'])))
 }
+
+function circleCuisine(cuisineData) {
+  if (circleLayer != undefined) {
+    circleLayer.clearLayers();
+  }
+  var circleList = [];
+  cuisineData.forEach(function (d) {
+    var circleRest = L.circleMarker([d.Latitude, d.Longitude], {
+      color: circleColor(d['CUISINE DESCRIPTION']),
+      fill: false,
+      weight: 4,
+      pane: 'shadowPane',
+      radius: 7
+    })
+    circleList.push(circleRest)
+  })
+  circleLayer = L.layerGroup(circleList).addTo(map)
+}
+
 var margin = { top: 30, right: 30, bottom: 70, left: 60 },
-    width = 660 - margin.left - margin.right,
-    height = 600 - margin.top - margin.bottom;
+  width = 660 - margin.left - margin.right,
+  height = 320 - margin.top - margin.bottom;
 
 var violationSvg = d3.select("#violation")
-.attr("width", width + margin.left + margin.right)
-.attr("height", height + margin.top + margin.bottom)
-.append("g")
-.attr("transform",
-  "translate(" + margin.left + "," + margin.top + ")");
+  .attr("width", width + margin.left + margin.right)
+  .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+  .attr("transform",
+    "translate(" + margin.left + "," + margin.top + ")");
 
 function violationsInSelectedArea() {
   // var svgarea = d3.select("violation");
@@ -496,19 +516,6 @@ function violationsInSelectedArea() {
   console.log(arrayDatas);
   var maxvalue = arrayTmp[0][1];
 
-
-  // const svgContainer = d3.select('#container');
-  // set the dimensions and margins of the graph
-  
-
-  // append the svg object to the body of the page
-
-  
-  
-  
-
-  // Parse the Data
-
   // X axis
   var x = d3.scaleBand()
     .range([0, width])
@@ -537,15 +544,8 @@ function violationsInSelectedArea() {
     .attr("width", x.bandwidth())
     .attr("height", function (d) { return height - y(d[1]); })
     .attr("fill", "#69b3a2")
-
-    
-    
-
-
 }
 function UpdatedviolationsInSelectedArea() {
-  
-  
   violationSvg.selectAll("*").remove();
   // violation data 
   // filteredViolationData = restData.filter(d=> selectedZip.includes(d.ZIPCODE))
@@ -563,7 +563,7 @@ function UpdatedviolationsInSelectedArea() {
   UarrayTmp = Array.from(sortedVDesc).slice(0, 10)
   myMap = new Map(UarrayTmp)
   console.log(myMap)
-  
+
   // var violationbar = violationSvg.select('g').selectAll('rect').data(UarrayTmp)
   // violationbar.exit().remove();
   arrayDatas = [];
@@ -579,7 +579,7 @@ function UpdatedviolationsInSelectedArea() {
 
   // const svgContainer = d3.select('#container');
   // set the dimensions and margins of the graph
-  
+
   // append the svg object to the body of the page
 
 
@@ -613,11 +613,6 @@ function UpdatedviolationsInSelectedArea() {
     .attr("width", x.bandwidth())
     .attr("height", function (d) { return height - y(d[1]); })
     .attr("fill", "#69b3a2")
-
-    
-    
-
-
 }
 
 
