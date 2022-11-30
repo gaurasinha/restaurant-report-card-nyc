@@ -32,6 +32,7 @@ var cuisineDimensions = {
 }
 
 
+
 legendBR.onAdd = function (map) {
 
   var div = L.DomUtil.create('div', 'info legend');
@@ -127,6 +128,10 @@ function calcRange(a, b) {
   //return this > min && this < max;
 };
 
+function displayRestaurantInfo() {
+  var popup = document.getElementById("myPopup");
+  popup.classList.toggle("show");
+}
 
 function clickFeature(e) {
   var markerList = []
@@ -159,9 +164,9 @@ function clickFeature(e) {
     // }
     // )
 
-    var div = $('<div id="' + d.CAMIS + '" style="width: 200px; height:170px;"><span style="font-weight: bold;color: black;">' + d.DBA + '</span><br>' + d['CUISINE DESCRIPTION'] + ' Tel:' + d.PHONE + '<br>' + d.BUILDING + ' ' + d.STREET + '<svg id="chart"></svg></div>')[0];
+    //var div = $('<div id="' + d.CAMIS + '" style="width: 200px; height:170px;"><span style="font-weight: bold;color: black;">' + d.DBA + '</span><br>' + d['CUISINE DESCRIPTION'] + ' Tel:' + d.PHONE + '<br>' + d.BUILDING + ' ' + d.STREET + '<svg id="chart"></svg></div>')[0];
 
-
+    var div = $('<div id="' + d.CAMIS + '" style="width: 200px; height:170px;"><span style="font-weight: bold;color: black;"><div class="popup" onclick="displayRestaurantInfo()">' + d.DBA +'<span class="popuptext" id="myPopup">'+ 'Cuisine: '+ d['CUISINE DESCRIPTION'] + ' Tel:' + d.PHONE + '<br>' + d.BUILDING + ' ' + d.STREET +'</span></div>' +'<svg id="chart"></svg></div>')[0];
     var xAccessor = d => d.INSPECTION_DATE
     var yAccessor = d => d.GRADE
 
@@ -425,8 +430,8 @@ function initializeCharts(zip) {
     // })
     // var div = $('<div id="'+  d.CAMIS +'" style="width: 200px; height:200px;"><p style="font-weight: bold;color:darkorange">Food Grades: 2021-22</p><p style="font-weight: bold;">'+d.DBA+'</p><p>'+inspectionResult+'</p><svg id="chart"></svg></div>')[0];
 
-    var div = $('<div id="' + d.CAMIS + '" style="width: 200px; height:170px;"><span style="font-weight: bold;color: black;">' + d.DBA + '</span><br>' + d['CUISINE DESCRIPTION'] + ' Tel:' + d.PHONE + '<br>' + d.BUILDING + ' ' + d.STREET + '<svg id="chart"></svg></div>')[0];
-
+   // var div = $('<div id="' + d.CAMIS + '" style="width: 200px; height:170px;"><span style="font-weight: bold;color: black;">' + d.DBA + '</span><br>' + d['CUISINE DESCRIPTION'] + ' Tel:' + d.PHONE + '<br>' + d.BUILDING + ' ' + d.STREET + '<svg id="chart"></svg></div>')[0];
+    var div = $('<div id="' + d.CAMIS + '" style="width: 200px; height:170px;"><span style="font-weight: bold;color: black;"><div class="popup" onclick="displayRestaurantInfo()">' + d.DBA +'<span class="popuptext" id="myPopup">'+ 'Cuisine: '+ d['CUISINE DESCRIPTION'] + ' Tel:' + d.PHONE + '<br>' + d.BUILDING + ' ' + d.STREET +'</span></div>' +'<svg id="chart"></svg></div>')[0];
 
     var xAccessor = d => d.INSPECTION_DATE
     var yAccessor = d => d.GRADE
