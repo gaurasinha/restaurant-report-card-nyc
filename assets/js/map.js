@@ -10,11 +10,11 @@ L.Icon.Default.imagePath = 'images/'
 var groupColors = ['#7BB661', '#FEF65C', '#FF5348']
 var selectedData;
 var selectedZip = [];
-var selectedCuisineGrade = [];
 var yAxisCBar;
 var selectedCuisine = [];
 var cuisineKeys;
 var circleColor;
+var filteredData;
 
 var markerIcon = [new L.Icon.Default({ iconUrl: 'marker-icon-green.png', shadowUrl: 'marker-shadow.png', iconRetinaUrl: 'marker-icon-green-2x.png' }),
 new L.Icon.Default({ iconUrl: 'marker-icon-yellow.png', shadowUrl: 'marker-shadow.png', iconRetinaUrl: 'marker-icon-yellow-2x.png' }),
@@ -91,9 +91,6 @@ d3.csv('assets/data/restrauntAvg.csv').then(function (data) {
 
 });
 
-
-
-
 function style(feature) {
   return {
     fillColor: zipColor(feature.properties.AvgScore),
@@ -146,6 +143,7 @@ function zoomToFeature(e) {
   updateCuisine()
   //filter data falling with clicked zipcode
   filteredData = restData.filter(d => selectedZip.includes(d.ZIPCODE))
+  circleCuisine()
   filteredData.forEach(function (d) {
     inspectData = gradeData.filter(e => d.CAMIS == e.CAMIS)
     // var inspectionResult = ""
@@ -251,6 +249,9 @@ function onEachFeature(feature, layer) {
 function updateCuisine() {
   selectedData = updateSelectedData();
   cuisineKeys = getCuisineKeys(selectedData)
+  circleColor = d3.scaleOrdinal()
+    .domain(cuisineKeys)
+    .range(d3.schemeCategory10)
   topData = d3.filter(selectedData, d => cuisineKeys.includes(d[0]))
   var cuisinebars = svgcuisine.select('g').selectAll('rect').data(topData)
   cuisinebars.exit().remove();
@@ -283,7 +284,11 @@ function updateCuisine() {
   var yAxisgenCBar = d3.axisLeft(yScaleCBar)
     .tickSize(0);
   yAxisCBar.merge(yAxisCBar).transition().duration(700).call(yAxisgenCBar)
-
+  yAxisCBar.selectAll('.tick').selectAll('text').merge(yAxisCBar).transition().duration(700).style('fill', function(d){
+    if(selectedCuisine.includes(d))
+      return circleColor(d)
+    return "currentColor"
+  })
 }
 
 function updateSelectedData() {
@@ -312,7 +317,8 @@ function getCuisineKeys(selectedData) {
   return Array.from(cuisineNames).slice(0, 10)
 }
 
-function clickCuisineName(cuisineName) {
+function clickCuisineName(e) {
+  var cuisineName=e.target.innerHTML
   if (selectedCuisine.includes(cuisineName)) {
     for (var i = 0; i < selectedCuisine.length; i++) {
       if (selectedCuisine[i] === cuisineName)
@@ -322,10 +328,17 @@ function clickCuisineName(cuisineName) {
   else {
     selectedCuisine.push(cuisineName)
   }
+  yAxisCBar.selectAll('.tick').selectAll('text').style('fill', function(d){
+    if(selectedCuisine.includes(d))
+      return circleColor(d)
+    return "currentColor"
+  })
+  circleCuisine()
 }
 
 function showCuisine(zip) {
   selectedZip.push(zip)
+  selectedCuisine.push('American')
   var markerList = [];
   selectedData = updateSelectedData()
   cuisineKeys = getCuisineKeys(selectedData)
@@ -370,6 +383,12 @@ function showCuisine(zip) {
     .style("stroke-linecap", 'butt')
     .style('stroke-linejoin', 'miter')
   yAxisCBar.selectAll('path').style('display', 'none')
+  yAxisCBar.selectAll('.tick').selectAll('text').style('fill', function(d){
+    if(selectedCuisine.includes(d))
+      return circleColor(d)
+    return "currentColor"
+  })
+    .on('click', clickCuisineName)
   filteredData = restData.filter(d => selectedZip.includes(d.ZIPCODE))
   filteredData.forEach(function (d) {
     inspectData = gradeData.filter(e => d.CAMIS == e.CAMIS)
@@ -453,16 +472,16 @@ function showCuisine(zip) {
   })
   markerLayer = L.layerGroup(markerList).addTo(map)
   violationsInSelectedArea();
-  selectedCuisine.push('American')
-  circleCuisine(filteredData.filter(d => selectedCuisine.includes(d['CUISINE DESCRIPTION'])))
+  circleCuisine()
 }
 
-function circleCuisine(cuisineData) {
+function circleCuisine() {
   if (circleLayer != undefined) {
     circleLayer.clearLayers();
   }
   var circleList = [];
-  cuisineData.forEach(function (d) {
+  selectedCuisineData = filteredData.filter(d=>selectedCuisine.includes(d['CUISINE DESCRIPTION']))
+  selectedCuisineData.forEach(function (d) {
     var circleRest = L.circleMarker([d.Latitude, d.Longitude], {
       color: circleColor(d['CUISINE DESCRIPTION']),
       fill: false,
