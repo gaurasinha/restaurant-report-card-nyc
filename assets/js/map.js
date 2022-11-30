@@ -296,6 +296,11 @@ function updateCuisine() {
       return circleColor(d)
     return "currentColor"
   })
+  .style('font-weight',function(d){
+    if(selectedCuisine.includes(d))
+      return 'bold'
+    return "normal"
+  })
   yAxisCBar.selectAll('.tick').selectAll('text').on('click', clickCuisineName)
 }
 
@@ -341,7 +346,11 @@ function clickCuisineName(e) {
       return circleColor(d)
     return "currentColor"
   })
-  // .on('click', clickCuisineName)
+  .style('font-weight',function(d){
+    if(selectedCuisine.includes(d))
+      return 'bold'
+    return "normal"
+  })
   circleCuisine()
 }
 
@@ -396,6 +405,11 @@ function showCuisine(zip) {
     if(selectedCuisine.includes(d))
       return circleColor(d)
     return "currentColor"
+  })
+  .style('font-weight',function(d){
+    if(selectedCuisine.includes(d))
+      return 'bold'
+    return "normal"
   })
     .on('click', clickCuisineName)
   filteredData = restData.filter(d => selectedZip.includes(d.ZIPCODE))
