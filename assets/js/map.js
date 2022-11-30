@@ -81,7 +81,7 @@ d3.csv('assets/data/restrauntAvg.csv').then(function (data) {
     d3.csv('assets/data/Inspection_Full.csv').then(function (dataGrade) {
       gradeData = dataGrade
 
-      setTimeout(showCuisine('11378'), 100000);
+      setTimeout(initializeCharts('11378'), 100000);
       map.flyToBounds([
         [40.73551917894102, -73.88564075991255],
         [40.71269707125203, -73.93131508939085]
@@ -145,8 +145,8 @@ function clickFeature(e) {
   filteredData = restData.filter(d => selectedZip.includes(d.ZIPCODE))
 
   var tmpCuisine = []
-  selectedCuisine.forEach(function(d){
-    if(cuisineKeys.includes(d))
+  selectedCuisine.forEach(function (d) {
+    if (cuisineKeys.includes(d))
       tmpCuisine.push(d)
   })
   selectedCuisine = tmpCuisine
@@ -264,7 +264,7 @@ function updateCuisine() {
   cuisinebars.exit().remove();
   var cuisineCountLabels = svgcuisine.select('#countLabel').selectAll('text').data(topData.filter(d => d[1] == 2))
   cuisineCountLabels.exit().remove();
-  var maxSum = d3.max(selectedData, d => d[2])
+  var maxSum = d3.max(selectedData, d => d[3])
   var yScaleCBar = d3.scaleBand()
     .domain(cuisineKeys)
     .range([cuisineDimensions.margin.top, cuisineDimensions.height - cuisineDimensions.margin.bottom])
@@ -286,21 +286,23 @@ function updateCuisine() {
     .merge(cuisineCountLabels).transition()
     .duration(700)
     .text(d => d[3])
-    .attr('y', d => yScaleCBar(d[0]) + yScaleCBar.bandwidth()*.75)
-    .attr('x', d => xScaleCBar(d[3])+3)
+    .attr('y', d => yScaleCBar(d[0]) + yScaleCBar.bandwidth() * .7)
+    .attr('x', d => xScaleCBar(d[3]) + 3)
+    .attr('font-size', 10)
+    .attr('font-family', "sans-serif")
   var yAxisgenCBar = d3.axisLeft(yScaleCBar)
     .tickSize(0);
   yAxisCBar.merge(yAxisCBar).transition().duration(700).call(yAxisgenCBar)
-  yAxisCBar.selectAll('.tick').selectAll('text').merge(yAxisCBar).transition().duration(700).style('fill', function(d){
-    if(selectedCuisine.includes(d))
+  yAxisCBar.selectAll('.tick').selectAll('text').merge(yAxisCBar).transition().duration(700).style('fill', function (d) {
+    if (selectedCuisine.includes(d))
       return circleColor(d)
     return "currentColor"
   })
-  .style('font-weight',function(d){
-    if(selectedCuisine.includes(d))
-      return 'bold'
-    return "normal"
-  })
+    .style('font-weight', function (d) {
+      if (selectedCuisine.includes(d))
+        return 'bold'
+      return "normal"
+    })
   yAxisCBar.selectAll('.tick').selectAll('text').on('click', clickCuisineName)
 }
 
@@ -331,7 +333,7 @@ function getCuisineKeys(selectedData) {
 }
 
 function clickCuisineName(e) {
-  var cuisineName=e.target.innerHTML
+  var cuisineName = e.target.innerHTML
   if (selectedCuisine.includes(cuisineName)) {
     for (var i = 0; i < selectedCuisine.length; i++) {
       if (selectedCuisine[i] === cuisineName)
@@ -341,20 +343,20 @@ function clickCuisineName(e) {
   else {
     selectedCuisine.push(cuisineName)
   }
-  yAxisCBar.selectAll('.tick').selectAll('text').style('fill', function(d){
-    if(selectedCuisine.includes(d))
+  yAxisCBar.selectAll('.tick').selectAll('text').style('fill', function (d) {
+    if (selectedCuisine.includes(d))
       return circleColor(d)
     return "currentColor"
   })
-  .style('font-weight',function(d){
-    if(selectedCuisine.includes(d))
-      return 'bold'
-    return "normal"
-  })
+    .style('font-weight', function (d) {
+      if (selectedCuisine.includes(d))
+        return 'bold'
+      return "normal"
+    })
   circleCuisine()
 }
 
-function showCuisine(zip) {
+function initializeCharts(zip) {
   selectedZip.push(zip)
   selectedCuisine.push('American')
   var markerList = [];
@@ -364,7 +366,7 @@ function showCuisine(zip) {
     .domain(cuisineKeys)
     .range(d3.schemeCategory10)
   selectedData = d3.filter(selectedData, d => cuisineKeys.includes(d[0]))
-  var maxSum = d3.max(selectedData, d => d[2])
+  var maxSum = d3.max(selectedData, d => d[3])
   var yScaleCBar = d3.scaleBand()
     .domain(cuisineKeys)
     .range([cuisineDimensions.margin.top, cuisineDimensions.height - cuisineDimensions.margin.bottom])
@@ -390,8 +392,10 @@ function showCuisine(zip) {
     .data(selectedData.filter(d => d[1] == 2))
     .enter().append("text")
     .text(d => d[3])
-    .attr('y', d => yScaleCBar(d[0]) + yScaleCBar.bandwidth()*.75)
-    .attr('x', d => xScaleCBar(d[3])+3)
+    .attr('y', d => yScaleCBar(d[0]) + yScaleCBar.bandwidth() * .7)
+    .attr('x', d => xScaleCBar(d[3]) + 3)
+    .attr('font-size', 10)
+    .attr('font-family', "sans-serif")
   yAxisCBar = svgcuisine.append("g")
     .attr("transform", `translate(${cuisineDimensions.margin.left}, 0)`)
     .call(yAxisgenCBar)
@@ -401,16 +405,16 @@ function showCuisine(zip) {
     .style("stroke-linecap", 'butt')
     .style('stroke-linejoin', 'miter')
   yAxisCBar.selectAll('path').style('display', 'none')
-  yAxisCBar.selectAll('.tick').selectAll('text').style('fill', function(d){
-    if(selectedCuisine.includes(d))
+  yAxisCBar.selectAll('.tick').selectAll('text').style('fill', function (d) {
+    if (selectedCuisine.includes(d))
       return circleColor(d)
     return "currentColor"
   })
-  .style('font-weight',function(d){
-    if(selectedCuisine.includes(d))
-      return 'bold'
-    return "normal"
-  })
+    .style('font-weight', function (d) {
+      if (selectedCuisine.includes(d))
+        return 'bold'
+      return "normal"
+    })
     .on('click', clickCuisineName)
   filteredData = restData.filter(d => selectedZip.includes(d.ZIPCODE))
   filteredData.forEach(function (d) {
@@ -494,8 +498,74 @@ function showCuisine(zip) {
     markerList.push(marker)
   })
   markerLayer = L.layerGroup(markerList).addTo(map)
+  drawLegendCuisine()
   violationsInSelectedArea();
   circleCuisine()
+}
+
+function drawLegendCuisine() {
+  var lcDimensions = {
+    width: 200,
+    height: 60
+  }
+  svgcuisine.append("g")
+    .attr('id', 'cuisineLegend')
+    .attr('transform', 'translate(' + (cuisineDimensions.width - lcDimensions.width) + ', ' + (cuisineDimensions.height - lcDimensions.height) + ')')
+    .append('rect')
+    .attr("width", lcDimensions.width)
+    .attr("height", lcDimensions.height)
+    .attr("x", 0)
+    .attr("y", 0)
+    .attr('fill', 'white')
+    .attr('stroke', 'black')
+  var legen = svgcuisine.select('#cuisineLegend')
+  legen.append('text')
+    .text('Restraunt Count')
+    .attr('text-anchor', 'middle')
+    .attr('y', 20)
+    .attr('x', lcDimensions.width / 2)
+    .attr('font-size', 10)
+    .attr('font-family', "sans-serif")
+  var legenXScale = d3.scaleBand()
+    .domain(['A', 'B', 'C'])
+    .range([0, lcDimensions.width])
+    .padding([0.2])
+  legen.append('rect')
+    .attr('y', 30)
+    .attr('x', legenXScale('A'))
+    .attr('width', 16)
+    .attr('height', 16)
+    .attr('fill', groupColors[0])
+  legen.append('rect')
+    .attr('y', 30)
+    .attr('x', legenXScale('B'))
+    .attr('width', 16)
+    .attr('height', 16)
+    .attr('fill', groupColors[1])
+  legen.append('rect')
+    .attr('y', 30)
+    .attr('x', legenXScale('C'))
+    .attr('width', 16)
+    .attr('height', 16)
+    .attr('fill', groupColors[2])
+  legen.append('text')
+    .text('Grade A')
+    .attr('y', 43)
+    .attr('x', legenXScale('A') + 18)
+    .attr('font-size', 10)
+    .attr('font-family', "sans-serif")
+  legen.append('text')
+    .text('Grade B')
+    .attr('y', 43)
+    .attr('x', legenXScale('B') + 18)
+    .attr('font-size', 10)
+    .attr('font-family', "sans-serif")
+  legen.append('text')
+    .text('Grade C')
+    .attr('y', 43)
+    .attr('x', legenXScale('C') + 18)
+    .attr('font-size', 10)
+    .attr('font-family', "sans-serif")
 }
 
 function circleCuisine() {
@@ -503,7 +573,7 @@ function circleCuisine() {
     circleLayer.clearLayers();
   }
   var circleList = [];
-  selectedCuisineData = filteredData.filter(d=>selectedCuisine.includes(d['CUISINE DESCRIPTION']))
+  selectedCuisineData = filteredData.filter(d => selectedCuisine.includes(d['CUISINE DESCRIPTION']))
   selectedCuisineData.forEach(function (d) {
     var circleRest = L.circleMarker([d.Latitude, d.Longitude], {
       color: circleColor(d['CUISINE DESCRIPTION']),
