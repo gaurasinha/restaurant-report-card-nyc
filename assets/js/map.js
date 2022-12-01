@@ -364,6 +364,7 @@ function clickCuisineName(e) {
 function initializeCharts(zip) {
   selectedZip.push(zip)
   selectedCuisine.push('American')
+  selectedCuisine.push('Chinese')
   var markerList = [];
   selectedData = updateSelectedData()
   cuisineKeys = getCuisineKeys(selectedData)
@@ -409,6 +410,7 @@ function initializeCharts(zip) {
     .style('paint-order', 'stroke')
     .style("stroke-linecap", 'butt')
     .style('stroke-linejoin', 'miter')
+    .style('cursor','pointer')
   yAxisCBar.selectAll('path').style('display', 'none')
   yAxisCBar.selectAll('.tick').selectAll('text').style('fill', function (d) {
     if (selectedCuisine.includes(d))
