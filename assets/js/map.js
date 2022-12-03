@@ -765,107 +765,109 @@ function violationsInSelectedArea() {
 }
 function UpdatedviolationsInSelectedArea() {
   violationSvg.selectAll("*").remove();
-  // violation data 
-  // filteredViolationData = restData.filter(d=> selectedZip.includes(d.ZIPCODE))
-  filteredViolationData = ViolationCodeData.filter(d => selectedZip.includes(d.ZIPCODE))
-  // filteredData.forEach(function (d) {
-  //   VCData = ViolationCodeData.filter(e => d.CAMIS==e.CAMIS)
+  // violation data
+    // filteredViolationData = restData.filter(d=> selectedZip.includes(d.ZIPCODE))
+    if (selectedZip.length != 0) {
+        filteredViolationData = ViolationCodeData.filter(d => selectedZip.includes(d.ZIPCODE))
+        // filteredData.forEach(function (d) {
+        //   VCData = ViolationCodeData.filter(e => d.CAMIS==e.CAMIS)
 
-  // VCData = ViolationCodeData.filter(function (e){return (d.Latitude==e.Latitude) && (d.Longitude==e.Longitude)})
-  // })
-  console.log(filteredViolationData);
-  var VGroup = d3.rollup(filteredViolationData, v => v.length, d => d['VIOLATIONCODE'])
-  console.log(VGroup);
-  const sortedVDesc = new Map([...VGroup].sort((a, b) => b[1] - a[1]));
-  console.log(sortedVDesc);
-  UarrayTmp = Array.from(sortedVDesc).slice(0, 10)
-  myMap = new Map(UarrayTmp)
-  console.log(myMap)
+        // VCData = ViolationCodeData.filter(function (e){return (d.Latitude==e.Latitude) && (d.Longitude==e.Longitude)})
+        // })
+        console.log(filteredViolationData);
+        var VGroup = d3.rollup(filteredViolationData, v => v.length, d => d['VIOLATIONCODE'])
+        console.log(VGroup);
+        const sortedVDesc = new Map([...VGroup].sort((a, b) => b[1] - a[1]));
+        console.log(sortedVDesc);
+        UarrayTmp = Array.from(sortedVDesc).slice(0, 10)
+        myMap = new Map(UarrayTmp)
+        console.log(myMap)
 
-  // var violationbar = violationSvg.select('g').selectAll('rect').data(UarrayTmp)
-  // violationbar.exit().remove();
-  arrayDatas = [];
-  myMap.forEach(function (value, key) {
+        // var violationbar = violationSvg.select('g').selectAll('rect').data(UarrayTmp)
+        // violationbar.exit().remove();
+        arrayDatas = [];
+        myMap.forEach(function (value, key) {
 
-    arrayDatas.push(key)
+            arrayDatas.push(key)
 
-  })
+        })
 
-  console.log(arrayDatas);
-  var maxvalue = UarrayTmp[0][1];
-
-
-  // const svgContainer = d3.select('#container');
-  // set the dimensions and margins of the graph
-
-  // append the svg object to the body of the page
+        console.log(arrayDatas);
+        var maxvalue = UarrayTmp[0][1];
 
 
-  // Parse the Data
+        // const svgContainer = d3.select('#container');
+        // set the dimensions and margins of the graph
 
-  // X axis
-  var x = d3.scaleBand()
-    .range([0, width])
-    .domain(arrayDatas)
-    .padding(0.1);
-  violationSvg.append("g")
-    .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(x))
-    .selectAll("text")
-    .style("text-anchor", "end");
-
-  // Add Y axis
-  var y = d3.scaleLinear()
-    .domain([0, maxvalue])
-    .range([height, 0]);
-  violationSvg.append("g")
-    .call(d3.axisLeft(y));
-
-    tooltip = d3
-        .select('body')
-        .append('div')
-        .attr('class', 'd3-tooltip')
-        .style('position', 'absolute')
-        .style('z-index', '10')
-        .style('visibility', 'hidden')
-        .style('padding', '10px')
-        .style('background', 'rgba(0,0,0,0.6)')
-        .style('border-radius', '4px')
-        .style('color', '#fff')
-  // Bars
-  violationSvg.selectAll("mybar")
-    .data(UarrayTmp)
-    .enter()
-    .append("rect")
-    .attr("x", d => x(d[0]))
-    .attr("y", d => y(d[1]))
-    .attr("width", x.bandwidth())
-    .attr("height", function (d) { return height - y(d[1]); })
-        .attr("fill", "#69b3a2")
-      .on("mouseover", function (event, d) {
-          console.log(d[0])
-          console.log(a[d[0]])
-          tooltip
-              .html(
-                  (`<div>${a[d[0]]}</div>`)
-              )
-              .style('visibility', 'visible');
-          d3.select(this).transition().attr('fill', '#eec42d');
+        // append the svg object to the body of the page
 
 
-      })
-      .on('mousemove', function (event, d) {
-          tooltip
-              .style('top', event.pageY - 10 + 'px')
-              .style('left', event.pageX + 10 + 'px');
-      })
-      .on("mouseout", function (event, d) {
+        // Parse the Data
 
-          tooltip.html(``).style('visibility', 'hidden');
-          d3.select(this).transition().attr('fill', "#69b3a2");
+        // X axis
+        var x = d3.scaleBand()
+            .range([0, width])
+            .domain(arrayDatas)
+            .padding(0.1);
+        violationSvg.append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x))
+            .selectAll("text")
+            .style("text-anchor", "end");
+
+        // Add Y axis
+        var y = d3.scaleLinear()
+            .domain([0, maxvalue])
+            .range([height, 0]);
+        violationSvg.append("g")
+            .call(d3.axisLeft(y));
+
+        tooltip = d3
+            .select('body')
+            .append('div')
+            .attr('class', 'd3-tooltip')
+            .style('position', 'absolute')
+            .style('z-index', '10')
+            .style('visibility', 'hidden')
+            .style('padding', '10px')
+            .style('background', 'rgba(0,0,0,0.6)')
+            .style('border-radius', '4px')
+            .style('color', '#fff')
+        // Bars
+        violationSvg.selectAll("mybar")
+            .data(UarrayTmp)
+            .enter()
+            .append("rect")
+            .attr("x", d => x(d[0]))
+            .attr("y", d => y(d[1]))
+            .attr("width", x.bandwidth())
+            .attr("height", function (d) { return height - y(d[1]); })
+            .attr("fill", "#69b3a2")
+            .on("mouseover", function (event, d) {
+                console.log(d[0])
+                console.log(a[d[0]])
+                tooltip
+                    .html(
+                        (`<div>${a[d[0]]}</div>`)
+                    )
+                    .style('visibility', 'visible');
+                d3.select(this).transition().attr('fill', '#eec42d');
 
 
-      });
+            })
+            .on('mousemove', function (event, d) {
+                tooltip
+                    .style('top', event.pageY - 10 + 'px')
+                    .style('left', event.pageX + 10 + 'px');
+            })
+            .on("mouseout", function (event, d) {
+
+                tooltip.html(``).style('visibility', 'hidden');
+                d3.select(this).transition().attr('fill', "#69b3a2");
+
+
+            });
+    }
 }
 
 
