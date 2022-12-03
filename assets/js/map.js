@@ -725,7 +725,22 @@ function violationsInSelectedArea() {
     .range([height, 0]);
   violationSvg.append("g")
         .call(d3.axisLeft(y));
-
+    //label x
+    violationSvg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -(height / 2))
+        .attr("y",-30)
+        .style("text-anchor", "middle")
+        .attr('font-size', 10)
+        .attr('font-family', "sans-serif")
+        .text("Violation Count");
+    //label y
+    violationSvg.append("text")
+        .attr("transform", "translate(" + (width / 2) + " ," + (height + 30) + ")")
+        .style("text-anchor", "middle")
+        .attr('font-size', 10)
+        .attr('font-family', "sans-serif")
+        .text("Violation Code");
     //var tooltip = d3.select("body").append("div").attr("class", "toolTip");
     tooltip = d3
         .select('body')
@@ -834,6 +849,23 @@ function UpdatedviolationsInSelectedArea() {
             .range([height, 0]);
         violationSvg.append("g")
             .call(d3.axisLeft(y));
+
+        //label x
+        violationSvg.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("x", -(height / 2))
+            .attr("y", -30)
+            .style("text-anchor", "middle")
+            .attr('font-size', 10)
+            .attr('font-family', "sans-serif")
+            .text("Violation Count");
+        //label y
+        violationSvg.append("text")
+            .attr("transform", "translate(" + (width / 2) + " ," + (height + 30) + ")")
+            .style("text-anchor", "middle")
+            .attr('font-size', 10)
+            .attr('font-family', "sans-serif")
+            .text("Violation Code");
 
         tooltip = d3
             .select('body')
