@@ -864,7 +864,7 @@ function UpdatedviolationsInSelectedArea() {
                         (`<div>${a[d[0]]}</div>`)
                     )
                     .style('visibility', 'visible');
-                d3.select(this).transition().attr('fill', '#eec42d');
+                d3.select(this).transition().attr('fill', '#29453e');
 
 
             })
