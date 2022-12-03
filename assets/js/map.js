@@ -603,7 +603,67 @@ var violationSvg = d3.select("#violation")
   .attr("height", height + margin.top + margin.bottom)
   .append("g")
   .attr("transform",
-    "translate(" + margin.left + "," + margin.top + ")");
+      "translate(" + margin.left + "," + margin.top + ")");
+
+var a = {
+    "02A" : "Food not cooked to required minimum temperature.",
+    "02B": "Hot food item not held at or above 140º F.",
+    "02C": "Hot food item that has been cooked and refrigerated is being held for service without first being reheated to 165º F or above within 2 hours.",
+    "02D": "Precooked potentially hazardous food from commercial food processing establishment that is supposed to be heated, but is not heated to 140º F within 2 hours.",
+    "02F": "Meat, fish or molluscan shellfish served raw or undercooked without prior notification to customer.",
+    "02G": "Cold food item held above 41º F (smoked fish and reduced oxygen packaged foods above 38 ºF) except during necessary preparation.",
+    "02H": "Food not cooled by an approved method whereby the internal product temperature is reduced from 140º F to 70º F or less within 2  hours, and from 70º F to 41º F or less within 4 additional hours.",
+    "02I": "Food prepared from ingredients at ambient temperature not cooled to 41º F or below within 4 hours.",
+    "03A": "Food from unapproved or unknown source or home canned. Reduced oxygen packaged (ROP) fish not frozen before processing; or ROP foods prepared on premises transported to another site.",
+    "03B": "Shellfish not from approved source, improperly tagged/labeled; tags not retained for 90 days.",
+    "03C": "Eggs found dirty/cracked; liquid, frozen or powdered eggs not pasteurized.",
+    "03D": "Canned food product observed swollen, leaking or rusted, and not segregated from other consumable food items.",
+    "03E": "Potable water supply inadequate. Water or ice not potable or from unapproved source. Cross connection in potable water supply system observed.",
+    "03G": "Raw food not properly washed prior to serving.",
+    "03I": "Juice packaged on premises with no or incomplete label, no warning statement",
+    "04A": "Food Protection Certificate not held by supervisor of food operations.",
+    "04B": "Food worker prepares food or handles utensil when ill with a disease transmissible by food, or have exposed infected cut or burn on hand.",
+    "04C": "Food worker/food vendor does not use utensil or other barrier to eliminate bare hand contact with food that will not receive adequate additional heat treatment.",
+    "04D": "Food worker does not wash hands thoroughly after using the toilet, coughing, sneezing, smoking, eating, preparing raw foods or otherwise contaminating hands.",
+    "04E": "Toxic chemical improperly labeled, stored or used such that food contamination may occur.",
+    "04F": "Food, food preparation area, food storage area, area used by employees or patrons, contaminated by sewage or liquid waste.",
+    "04G": "Unprotected potentially hazardous food re-served.",
+    "04H": "Raw, cooked or prepared food is adulterated, contaminated, cross-contaminated, or not discarded in accordance with HACCP plan.",
+    "04I": "Unprotected food re-served.",
+    "04J": "Appropriately scaled metal stem-type thermometer or thermocouple not provided or used to evaluate temperatures of potentially hazardous foods during cooking, cooling, reheating and holding.",
+    "04K": "Evidence of rats or live rats present in facility's food and/or non-food areas.",
+    "04L": "Evidence of mice or live mice in establishment's food or non-food areas.",
+    "04M": "Live roaches in facility's food or non-food area.",
+    "04N": "Filth flies or food/refuse/sewage-associated (FRSA) flies present in facilities food and/or non-food areas.Filth flies include house flies.",
+    "04O": "Live animals other than fish in tank or service animal present in facility's food and/or non-food areas.",
+    "04P": "Food containing a prohibited substance held, kept, offered, prepared, processed, packaged, or served.",
+    "05A": "Sewage disposal system improper or unapproved.",
+    "05B": "Harmful, noxious gas or vapor detected. CO =13 ppm.",
+    "05C": "Food contact surface improperly constructed or located. Unacceptable material used.",
+    "05D": "No hand washing facility in or adjacent to toilet room or within 25 feet of a food preparation, food service or ware washing area.  Hand washing facility not accessible, obstructed or used for non-hand washing purposes. No hot and cold running water or water at inadequate pressure. No soap or acceptable hand-drying device.",
+    "05E": "Insufficient or no refrigerated or hot holding equipment to keep potentially hazardous foods at required temperatures.",
+    "05F": "Insufficient or no refrigerated or hot holding equipment to keep potentially hazardous foods at required temperatures.",
+    "05F": "Insufficient or no refrigerated or hot holding equipment to keep potentially hazardous foods at required temperatures.",
+    "05H": "No facilities available to wash, rinse and sanitize utensils and/or equipment.",
+    "06A": "Personal cleanliness inadequate. Outer garment soiled with possible contaminant. Effective hair restraint not worn in an area where food is prepared.",
+    "06B": "Tobacco use, eating, or drinking from open container in food preparation, food storage or dishwashing area observed.",
+    "06C": "Food not protected from potential source of contamination during storage, preparation, transportation, display or service.",
+    "06D": "Food contact surface not properly washed, rinsed and sanitized after each use and following any activity when contamination may have occurred.",
+    "06E": "Sanitized equipment or utensil, including in-use food dispensing utensil, improperly used or stored.",
+    "06F": "Wiping cloths soiled or not stored in sanitizing solution.",
+    "06G": "HACCP plan not approved or approved HACCP plan not maintained on premises.",
+    "06H": "Records and logs not maintained to demonstrate that HACCP plan has been properly implemented.",
+    "06I": "Food not labeled in accordance with HACCP plan.",
+    "06J": "Written Standard Operating Procedure (SOP) approved by the Department for refillable, reusable containers not available at the time of inspection.  Container construction improper",
+    "07A": "Duties of an officer of the Department interfered with or obstructed.",
+    "08A": "Establishment is not free of harborage or conditions conducive to rodents, insects or other pests.",
+    "08B": "Covered garbage receptacle not provided or inadequate, except that garbage receptacle may be uncovered during active use. Garbage storage area not properly constructed or maintained; grinder or compactor dirty.",
+    "08C": "Pesticide use not in accordance with label or applicable laws. Prohibited chemical used/stored. Open bait station used.",
+    "09A": "Canned food product observed dented and not segregated from other consumable food items.",
+    "10F": "Non-food contact surface improperly constructed. Unacceptable material used. Non-food contact surface or equipment improperly maintained and/or not properly sealed, raised, spaced or movable to allow accessibility for cleaning on all sides, above and underneath the unit.",
+    "10G": "Dishwashing and ware washing:  Cleaning and sanitizing of tableware, including dishes, utensils, and equipment deficient."
+
+      }
 
 function violationsInSelectedArea() {
   // var svgarea = d3.select("violation");
@@ -651,7 +711,22 @@ function violationsInSelectedArea() {
     .domain([0, maxvalue])
     .range([height, 0]);
   violationSvg.append("g")
-    .call(d3.axisLeft(y));
+        .call(d3.axisLeft(y));
+
+    //var tooltip = d3.select("body").append("div").attr("class", "toolTip");
+    tooltip = d3
+        .select('body')
+        .append('div')
+        .attr('class', 'd3-tooltip')
+        .style('position', 'absolute')
+        .style('z-index', '10')
+        .style('visibility', 'hidden')
+        .style('padding', '10px')
+        .style('background', 'rgba(0,0,0,0.6)')
+        .style('border-radius', '4px')
+        .style('color', '#fff')
+       
+   
 
   // Bars
   violationSvg.selectAll("mybar")
@@ -662,7 +737,31 @@ function violationsInSelectedArea() {
     .attr("y", d => y(d[1]))
     .attr("width", x.bandwidth())
     .attr("height", function (d) { return height - y(d[1]); })
-    .attr("fill", "#69b3a2")
+        .attr("fill", "#69b3a2")
+      .on("mouseover", function (event, d) {
+          console.log(d[0])
+          console.log(a[d[0]])
+          tooltip
+              .html(
+                  (`<div>${a[d[0]]}</div>`)
+          )
+              .style('visibility', 'visible');
+          d3.select(this).transition().attr('fill', '#eec42d');
+                 
+          
+      })
+      .on('mousemove', function (event, d) {
+          tooltip
+              .style('top', event.pageY - 10 + 'px')
+              .style('left', event.pageX + 10 + 'px');
+      })
+      .on("mouseout", function (event, d) {
+          
+          tooltip.html(``).style('visibility', 'hidden');
+          d3.select(this).transition().attr('fill', "#69b3a2");
+
+          
+      });
 }
 function UpdatedviolationsInSelectedArea() {
   violationSvg.selectAll("*").remove();
