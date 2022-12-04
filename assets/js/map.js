@@ -848,17 +848,20 @@ function UpdatedviolationsInSelectedArea() {
       .attr('font-family', "sans-serif")
       .text("Violation Code");
 
-    tooltip = d3
-      .select('body')
-      .append('div')
-      .attr('class', 'd3-tooltip')
-      .style('position', 'absolute')
-      .style('z-index', '10')
-      .style('visibility', 'hidden')
-      .style('padding', '10px')
-      .style('background', 'rgba(0,0,0,0.6)')
-      .style('border-radius', '4px')
-      .style('color', '#fff')
+   
+      tooltip = d3
+          .select('body')
+          .append('div')
+          .attr('class', 'd3-tooltip')
+          .style('position', 'absolute')
+          .style('z-index', '10')
+          .style('visibility', 'hidden')
+          .style('padding', '10px')
+          .style('background', 'rgba(0,0,0,0.6)')
+          .style('border-radius', '4px')
+          .style('color', '#fff')
+          .style('width', violationTooltipWidth + 'px')
+          .style('font-size', 'small')
     // Bars
     violationSvg.selectAll("mybar")
       .data(UarrayTmp)
@@ -879,11 +882,15 @@ function UpdatedviolationsInSelectedArea() {
           .style('visibility', 'visible');
         d3.select(this).transition().attr('fill', '#29453e');
       })
-      .on('mousemove', function (event, d) {
-        tooltip
-          .style('top', event.pageY - 10 + 'px')
-          .style('left', event.pageX + 10 + 'px');
-      })
+        .on('mousemove', function (event, d) {
+            tooltip
+                .style('top', event.pageY + 16 + 'px')
+                .style('left', function () {
+                    if (document.body.offsetWidth - event.pageX - 10 < violationTooltipWidth)
+                        return event.pageX - violationTooltipWidth + 'px';
+                    return event.pageX + 10 + 'px'
+                });
+        })
       .on("mouseout", function (event, d) {
         tooltip.html(``).style('visibility', 'hidden');
         d3.select(this).transition().attr('fill', "#69b3a2");
